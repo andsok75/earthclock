@@ -35,8 +35,6 @@ function printTime() {
     };
 
     console.log("global:",  global);
-    console.log("(whole day) hours in week", (dayOfYear%10)*10);
-    console.log("hours in day", Math.trunc(secondOfDay/10000));
 
     navigator.geolocation.getCurrentPosition(function(position) {
         const longitude = position.coords.longitude;
