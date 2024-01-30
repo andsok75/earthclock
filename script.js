@@ -17,11 +17,14 @@ function getDecimalSecondOfDay(date) {
     const s = date.getUTCSeconds();
     const m = date.getUTCMinutes();
     const h = date.getUTCHours();
-    // 864 is number of milliseconds in a decimal second, 24*60*60*1000/(10*100*100)
+    // 864 is the number of milliseconds in a decimal second, 24*60*60*1000/(10*100*100).
     return Math.trunc((ms+(s+(m+h*60)*60)*1000)/864);
 }
 
 function getTimeFromDecimalSeconds(seconds, dayOfWeek = 0) {
+    // There 100 decimal seconds in a decimal minute, 100 decimal minutes in a decimal hour, and
+    // 10 decimal hours in a day or 100 decimal hours in a decimal (10 day) week.
+    // Thus there are one million decimal seconds in a decimal week.
     return {
         hour: dayOfWeek*10 + Math.trunc(seconds/10000),
         minute: Math.trunc((seconds%10000)/100),
