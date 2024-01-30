@@ -30,9 +30,9 @@ function getTimeFromDecimalSeconds(seconds, dayOfWeek = 0) {
 }
 
 function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
-    const shift = secondOfDay-secondOfDayAtLocalNoon;
-    const secondsToLocalNoon = shift >= -50000 && shift < 50000 ? Math.abs(shift) : 100000-Math.abs(shift);
-    const period = (shift >= -50000 && shift < 0) || shift >= 50000 ? "am" : "pm";
+    const ds = secondOfDay-secondOfDayAtLocalNoon;
+    const secondsToLocalNoon = ds >= -50000 && ds < 50000 ? Math.abs(ds) : 100000-Math.abs(ds);
+    const period = (ds >= -50000 && ds < 0) || ds >= 50000 ? "am" : "pm";
     return [secondsToLocalNoon, period];
 }
 
