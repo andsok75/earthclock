@@ -31,8 +31,8 @@ function getTimeFromDecimalSeconds(seconds, dayOfWeek = 0) {
 
 function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
     const ds = secondOfDay-secondOfDayAtLocalNoon;
-    const secondsToLocalNoon = ds >= -50000 && ds < 50000 ? Math.abs(ds) : 100000-Math.abs(ds);
-    const period = (ds >= -50000 && ds < 0) || ds >= 50000 ? "am" : "pm";
+    const secondsToLocalNoon = -50000 < ds && ds < 50000 ? Math.abs(ds) : 100000-Math.abs(ds);
+    const period = (-50000 <= ds && ds < 0) || 50000 <= ds ? "am" : "pm";
     return [secondsToLocalNoon, period];
 }
 
