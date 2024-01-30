@@ -25,8 +25,15 @@ function getTimeFromDecimalSeconds(seconds, dayOfWeek = 0) {
     return {
         hour: dayOfWeek*10 + Math.trunc(seconds/10000),
         minute: Math.trunc((seconds%10000)/100),
-        second: seconds%100,
+        second: seconds%100
     }
+}
+
+function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
+    const shift = secondOfDay-secondOfDayAtLocalNoon;
+    const secondsToLocalNoon = shift >= -50000 && shift < 50000 ? Math.abs(shift) : 100000-Math.abs(shift);
+    const period = (shift >= -50000 && shift < 0) || shift >= 50000 ? "am" : "pm";
+    return [secondsToLocalNoon, period];
 }
 
 function printTime() {
@@ -42,22 +49,22 @@ function printTime() {
 
     console.log("global:",  global);
 
+    if (!navigator.geolocation) { return; }
+
     navigator.geolocation.getCurrentPosition(function(position) {
         const longitude = position.coords.longitude;
-        // const b = Math.trunc(1e8*((longitude+180)/360)/864);
-        // longitude measured in decimal seconds, as integer ranging from 0 up to 100000
+        // longitude below is measured in decimal seconds, as integer ranging from 0 up to 100000
         // Greenwich meridian is at 50000 and Sydney is at 91994 decimal seconds
         const longitudeInSeconds = Math.trunc(100000*(longitude+180)/360);
-        const timeAtNoon = getTimeFromDecimalSeconds(100000-longitudeInSeconds)
-        const shift = secondOfDay-longitudeInSeconds;
-        const timeToNoonSeconds = shift >= -50000 && shift < 50000 ? Math.abs(shift) : 100000-Math.abs(shift);
-        const period = (shift >= -50000 && shift < 0) || shift >= 50000 ? "am" : "pm";
+        const secondOfDayAtLocalNoon = 100000-longitudeInSeconds;
+        const timeAtLocalNoon = getTimeFromDecimalSeconds(secondOfDayAtLocalNoon);
+        const [secondsToLocalNoon, period] = getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon);
         const local = {
-            ...getTimeFromDecimalSeconds(timeToNoonSeconds),
+            ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
         console.log("local:", local, "at longitude", longitude);
-        console.log("noon: ", timeAtNoon)
+        console.log("noon: ", timeAtLocalNoon)
     }, function(error) {
         console.log(error);
     });
