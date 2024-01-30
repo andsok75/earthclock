@@ -54,7 +54,7 @@ function printTime() {
     navigator.geolocation.getCurrentPosition(function(position) {
         const longitude = position.coords.longitude;
         // longitude below is measured in decimal seconds, as integer ranging from 0 up to 100000
-        // Greenwich meridian is at 50000 and Sydney is at 91994 decimal seconds
+        // Greenwich meridian is at 50000 and Sydney is at 92000 decimal seconds
         const longitudeInSeconds = Math.trunc(100000*(longitude+180)/360);
         const secondOfDayAtLocalNoon = 100000-longitudeInSeconds;
         const timeAtLocalNoon = getTimeFromDecimalSeconds(secondOfDayAtLocalNoon);
