@@ -1,0 +1,57 @@
+navigator.geolocation.getCurrentPosition(function(position) {console.log(position.coords.longitude)}, function(error) {console.log(error)})
+
+function getYear(date) {
+    // https://en.wikipedia.org/wiki/Ab_urbe_condita
+    return 753 + date.getUTCFullYear();
+}
+
+function getDayOfYear(date) {
+    const y = date.getUTCFullYear();
+    const m = date.getUTCMonth();
+    const d = date.getUTCDate();
+    // https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
+    return -1+m*31-(m>1?(1054267675>>m*3-6&7)-(y&3||!(y%25)&&y&15?0:1):0)+d;
+}
+
+
+function getSecondOfDay(date) {
+    const ms = date.getUTCMilliseconds();
+    const s = date.getUTCSeconds();
+    const m = date.getUTCMinutes();
+    const h = date.getUTCHours();
+    return Math.trunc((ms+(s+(m+h*60)*60)*1000)/864);
+}
+
+function getTime() {
+    const date = new Date();
+    const dayOfYear = getDayOfYear(date);
+    const secondOfDay = getSecondOfDay(date);
+
+    let secondOfDayShifted = undefined;
+    navigator.geolocation.getCurrentPosition(function(position) {
+        const longitude = position.coords.longitude+180;
+        secondOfDayShifted = secondOfDay-Math.trunc(1e8*(longitude/360)/864);
+    }, function(error) {
+        console.log(error);
+    });
+
+    shift = (secondOfDay - secondOfDayShifted)/10000
+
+    return {
+        global: {
+            year: getYear(date),
+            week: Math.trunc(dayOfYear/10),
+            hour: (dayOfYear%10)*10+Math.trunc(secondOfDay/10000),
+            minute: Math.trunc((secondOfDay%10000)/100),
+            second: secondOfDay%100    
+        },
+        ... secondOfDayShifted === undefined ? {} : {
+            local: {
+                hour: Math.abs(Math.trunc(secondOfDayShifted/10000)),
+                minute: Math.trunc((secondOfDayShifted%10000)/100),
+                second: secondOfDayShifted%100,
+                period: Math.sign(secondOfDayShifted) ? "am" : "pm"
+            }
+        }
+    };
+}
