@@ -21,6 +21,14 @@ function getDecimalSecondOfDay(date) {
     return Math.trunc((ms+(s+(m+h*60)*60)*1000)/864);
 }
 
+function getTimeFromDecimalSeconds(seconds, dayOfWeek = 0) {
+    return {
+        hour: dayOfWeek*10 + Math.trunc(seconds/10000),
+        minute: Math.trunc((seconds%10000)/100),
+        second: seconds%100,
+    }
+}
+
 function printTime() {
     const date = new Date();
     const dayOfYear = getDayOfYear(date);
@@ -29,9 +37,7 @@ function printTime() {
     const global = {
         year: getYear(date),
         week: Math.trunc(dayOfYear/10),
-        hour: (dayOfYear%10)*10+Math.trunc(secondOfDay/10000),
-        minute: Math.trunc((secondOfDay%10000)/100),
-        second: secondOfDay%100
+        ...getTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
     };
 
     console.log("global:",  global);
@@ -44,17 +50,11 @@ function printTime() {
         const timeToNoonSeconds = shift >= -50000 && shift < 50000 ? Math.abs(shift) : 100000-Math.abs(shift);
         const period = (shift >= -50000 && shift < 0) || shift >= 50000 ? "am" : "pm";
         const local = {
-            hour: Math.trunc(timeToNoonSeconds/10000),
-            minute: Math.trunc((timeToNoonSeconds%10000)/100),
-            second: timeToNoonSeconds%100,
+            ...getTimeFromDecimalSeconds(timeToNoonSeconds),
             period: period
         };
         const noonSeconds = 100000-longitudeInSeconds;
-        const noon = {
-            hour: Math.trunc(noonSeconds/10000),
-            minute: Math.trunc((noonSeconds%10000)/100),
-            second: noonSeconds%100
-        }
+        const noon = getTimeFromDecimalSeconds(noonSeconds)
         console.log("local:", local, "at longitude", longitude);
         console.log("noon: ", noon)
     }, function(error) {
