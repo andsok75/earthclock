@@ -1,6 +1,10 @@
 function getYear(date) {
+    return date.getUTCFullYear();
+}
+
+function getAUCYear(date) {
     // https://en.wikipedia.org/wiki/Ab_urbe_condita
-    return 753 + date.getUTCFullYear();
+    return 753 + getYear(date);
 }
 
 function getDayOfYear(date) {
@@ -10,7 +14,6 @@ function getDayOfYear(date) {
     // https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
     return -1+m*31-(m>1?(1054267675>>m*3-6&7)-(y&3||!(y%25)&&y&15?0:1):0)+d;
 }
-
 
 function getDecimalSecondOfDay(date) {
     const ms = date.getUTCMilliseconds();
