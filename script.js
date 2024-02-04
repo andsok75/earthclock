@@ -66,7 +66,7 @@ function printTime() {
         ...getTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
     };
 
-    console.log("standard:",  standard);
+    console.log("standard time:",  standard);
 
     if (!navigator.geolocation) { return; }
 
@@ -82,7 +82,7 @@ function printTime() {
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        console.log("local:", local, "at longitude", longitude);
+        console.log("local time:", local, "at longitude", longitude);
         console.log("mean noon: ", timeAtLocalNoon)
     }, function(error) {
         console.log(error);
