@@ -83,7 +83,7 @@ function printTime() {
             period: period
         };
         console.log("local:", local, "at longitude", longitude);
-        console.log("noon: ", timeAtLocalNoon)
+        console.log("mean noon: ", timeAtLocalNoon)
     }, function(error) {
         console.log(error);
     });
