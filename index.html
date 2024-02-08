@@ -3,9 +3,8 @@
   <title></title>
   <script type="text/javascript">
     let longitude = undefined;
-    window.onload = onload;
 
-    function onload() {
+    window.onload = function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 longitude = position.coords.longitude;
@@ -14,7 +13,7 @@
             });
         }
         setInterval(updateTime, 1);
-    }
+    };
 
     function getYear(date) {
         return date.getUTCFullYear();
