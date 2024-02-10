@@ -20,18 +20,21 @@
     };
 
     function updateTime() {
-        // This function prints the standard time, that is UTC time expressed in decimal units, and local time.
-        // The time at local noon is the standard time when the mean sun passes the local medirian.
+        // This function updates the time, that is UTC time expressed as year and days with decimal fractions.
+        // The same time is also shown as decimal hours, minutes, and seconds in the current ten-day week.
+        //
+        // The time at local noon is the UTC time expressed in decimal units as above at the moment when the mean sun passes the local medirian.
         // The local time is the time to local noon expressed in decimal units.
         // The pm period tells you how much time has passed since noon, and the am period tells you how much time remains until noon.
-        // For instance, 1:95am mean there are 195 decimal minutes remaining until noon at the given location.
+        // For instance, 1:95:14am mean there are decimal 1 hour, 95 minutes and 14 seconds remaining until noon at the given longitude.
+        //
         // Note that the mean sun is usually different from the apparent sun, so apparent noon may be ahead or behind the mean noon by a few minutes.
         // For details, see https://en.wikipedia.org/wiki/Equation_of_time
         //
         // The following command yields a table showing decimal minutes from mean noon to apparent noon for each day of year 2024.
         // For instance, on day 40 the apparent noon occurs later than the mean noon by almost ten decimal minutes.
-        // For details, see https://ssd-api.jpl.nasa.gov/doc/horizons.html
         // (YEAR=2024; curl -s "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND='10'&OBJ_DATA='NO'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='0,0,0@399'&START_TIME='"$YEAR"-01-01%2012:00'&STOP_TIME='"$YEAR"-12-31%2012:00'&STEP_SIZE='1%20d'&CSV_FORMAT='NO'&QUANTITIES='34'" | awk 'NR==1{printf "day minutes\n"}/\$\$SOE/{flag=1;next}/\$\$EOE/{flag=0}flag{h=$(NF-2);m=$(NF-1);s=$NF;eot=(((h-12)*60+m)*60+s)*10/864; printf "%3d%7.2f\n",i++,-eot}' -)
+        // For details, see https://ssd-api.jpl.nasa.gov/doc/horizons.html
 
         const date = new Date();
         const dayOfYear = getDayOfYear(date);
@@ -41,13 +44,13 @@
         const day = dayOfYear + secondOfDay/100000;
         document.getElementById('time').innerHTML = `${year}/${day.toFixed(5).padStart(9, '0')}`;
 
-        const standard = {
+        const tenDayTime = {
             year: year,
             week: Math.trunc(dayOfYear/10),
             ...getTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
         };
 
-        document.getElementById('standard').innerHTML = `${standard.hour.p()}:${standard.minute.p()}:${standard.second.p()} of week ${standard.week} of year ${standard.year}`;
+        document.getElementById('tenDayTime').innerHTML = `${tenDayTime.hour.p()}:${tenDayTime.minute.p()}:${tenDayTime.second.p()} of week ${tenDayTime.week} of year ${tenDayTime.year}`;
 
         if (longitude === undefined) { return; }
 
@@ -57,11 +60,11 @@
         const secondOfDayAtLocalNoon = 100000-longitudeInSeconds;
         const timeAtLocalNoon = getTimeFromDecimalSeconds(secondOfDayAtLocalNoon);
         const [secondsToLocalNoon, period] = getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon);
-        const local = {
+        const localTime = {
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        document.getElementById('local').innerHTML = `${local.hour}:${local.minute.p()}:${local.second.p()}${local.period} at ${longitude} (noon ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p()}:${timeAtLocalNoon.second.p()})`;
+        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p()}:${localTime.second.p()}${localTime.period} at ${longitude} (noon ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p()}:${timeAtLocalNoon.second.p()})`;
     }
 
     function getYear(date) {
@@ -85,12 +88,12 @@
         return Math.trunc((ms+(s+(m+h*60)*60)*1000)/864);
     }
 
-    function getTimeFromDecimalSeconds(seconds, dayOfWeek = 0) {
+    function getTimeFromDecimalSeconds(seconds, dayOfWeek=0) {
         // There 100 decimal seconds in a decimal minute, 100 decimal minutes in a decimal hour, and
         // 10 decimal hours in a day or 100 decimal hours in a decimal (10 day) week.
         // Thus there are one million decimal seconds in a decimal week.
         return {
-            hour: dayOfWeek*10 + Math.trunc(seconds/10000),
+            hour: dayOfWeek*10+Math.trunc(seconds/10000),
             minute: Math.trunc((seconds%10000)/100),
             second: seconds%100
         }
@@ -110,7 +113,7 @@
   </head>
   <body>
     <div id="time"></div>
-    <div id="standard"></div>
-    <div id="local"></div>
+    <div id="tenDayTime"></div>
+    <div id="localTime"></div>
   </body>
 </html>
