@@ -100,9 +100,9 @@
     }
 
     function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
-        const ds = secondOfDay-secondOfDayAtLocalNoon;
-        const secondsToLocalNoon = -50000 < ds && ds < 50000 ? Math.abs(ds) : 100000-Math.abs(ds);
-        const period = (-50000 <= ds && ds < 0) || 50000 <= ds ? "am" : "pm";
+        const s = secondOfDay-secondOfDayAtLocalNoon;
+        const secondsToLocalNoon = -50000 < s && s < 50000 ? Math.abs(s) : 100000-Math.abs(s);
+        const period = (-50000 <= s && s < 0) || 50000 <= s ? "am" : "pm";
         return [secondsToLocalNoon, period];
     }
 
