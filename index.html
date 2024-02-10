@@ -20,7 +20,7 @@
     };
 
     function updateTime() {
-        // This function updates the time, that is UTC time expressed as year and days with decimal fractions.
+        // This function updates the time, that is UTC time expressed as years and days with decimal fractions.
         // The same time is also shown as decimal hours, minutes, and seconds in the current ten-day week.
         //
         // The time at local noon is the UTC time expressed in decimal units as above at the moment when the mean sun passes the local medirian.
@@ -54,8 +54,8 @@
 
         if (longitude === undefined) { return; }
 
-        // longitude below is measured in decimal seconds, as integer ranging from 0 up to 100000
-        // Greenwich meridian is at 50000 and Sydney is at 92000 decimal seconds
+        // Longitude below is measured in decimal seconds, as an integer ranging from 0 up to 100000.
+        // Greenwich meridian is at 50000 and Sydney is at 92000 decimal seconds.
         const longitudeInSeconds = Math.trunc(100000*(longitude+180)/360);
         const secondOfDayAtLocalNoon = 100000-longitudeInSeconds;
         const timeAtLocalNoon = getTimeFromDecimalSeconds(secondOfDayAtLocalNoon);
