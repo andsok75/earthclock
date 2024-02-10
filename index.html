@@ -1,5 +1,9 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="style.css">
   <title></title>
   <script type="text/javascript">
     let longitude = undefined;
@@ -33,14 +37,17 @@
         const dayOfYear = getDayOfYear(date);
         const secondOfDay = getDecimalSecondOfDay(date);
 
+        const year = getYear(date);
+        const day = dayOfYear + secondOfDay/100000;
+        document.getElementById('time').innerHTML = `${year}/${day.toFixed(5).padStart(9, '0')}`;
+
         const standard = {
-            year: getYear(date),
+            year: year,
             week: Math.trunc(dayOfYear/10),
             ...getTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
         };
 
-        document.getElementById('standardtime').innerHTML = getDecimalTimeString(standard);
-        // console.log("standard time:",  standard);
+        document.getElementById('standard').innerHTML = `${standard.hour.p()}:${standard.minute.p()}:${standard.second.p()} of week ${standard.week} of year ${standard.year}`;
 
         if (longitude === undefined) { return; }
 
@@ -54,9 +61,7 @@
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        document.getElementById('localtime').innerHTML = `${getDecimalLocalTimeString(local)} at longitude ${longitude}`;
-        // console.log("mean noon: ", timeAtLocalNoon, "at longitude", longitude);
-        // console.log("local time:", local, "at longitude", longitude);
+        document.getElementById('local').innerHTML = `${local.hour}:${local.minute.p()}:${local.second.p()}${local.period} at ${longitude} (noon ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p()}:${timeAtLocalNoon.second.p()})`;
     }
 
     function getYear(date) {
@@ -98,26 +103,14 @@
         return [secondsToLocalNoon, period];
     }
 
-    function getDecimalTimeString(time) {
-        y = time.year.toString();
-        w = time.week.toString().padStart(2, '0');
-        h = time.hour.toString().padStart(2, '0');
-        m = time.minute.toString().padStart(2, '0');
-        s = time.second.toString().padStart(2, '0');
-        return `${y}-${w} ${h}:${m}:${s}`;
-    }
-
-    function getDecimalLocalTimeString(time) {
-        h = time.hour.toString().padStart(2, '0');
-        m = time.minute.toString().padStart(2, '0');
-        s = time.second.toString().padStart(2, '0');
-        period = time.period;
-        return `${h}:${m}:${s}${period}`;
+    Number.prototype.p = function(length=2) {
+        return this.toString().padStart(length, '0')
     }
   </script>
   </head>
   <body>
-    <div id="standardtime"></div>
-    <div id="localtime"></div>
+    <div id="time"></div>
+    <div id="standard"></div>
+    <div id="local"></div>
   </body>
 </html>
