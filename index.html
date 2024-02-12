@@ -42,7 +42,7 @@
         const secondOfDay = getDecimalSecondOfDay(date);
 
         const dayWithDecimalFractions = dayOfYear + secondOfDay/100000;
-        document.getElementById('time').innerHTML = `${year}/${dayWithDecimalFractions.toFixed(5).padStart(9, '0')}`;
+        document.getElementById('time').innerHTML = `${year}/${dayWithDecimalFractions.toFixed(6).slice(0, -1).padStart(9, '0')}`;
 
         const tenDayTime = {
             year: year,
