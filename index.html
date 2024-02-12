@@ -40,9 +40,8 @@
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
         const secondOfDay = getDecimalSecondOfDay(date);
-        const minuteOfDay = Math.trunc(secondOfDay/100);
 
-        document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${minuteOfDay}`;
+        document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${secondOfDay}`;
 
         const tenDayTime = {
             year: year,
@@ -50,7 +49,7 @@
             ...getTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
         };
 
-        document.getElementById('tenDayTime').innerHTML = `${tenDayTime.hour.p()}:${tenDayTime.minute.p()} of week ${tenDayTime.week} of year ${tenDayTime.year}`;
+        document.getElementById('tenDayTime').innerHTML = `${tenDayTime.hour.p()}:${tenDayTime.minute.p()}:${tenDayTime.second.p()} of week ${tenDayTime.week} of year ${tenDayTime.year}`;
 
         if (longitude === undefined) { return; }
 
@@ -64,7 +63,7 @@
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p()}${localTime.period} at ${longitude} (noon ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p()})`;
+        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p()}:${localTime.second.p()}${localTime.period} at ${longitude} (noon ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p()}:${timeAtLocalNoon.second.p()})`;
     }
 
     function getYear(date) {
