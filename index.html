@@ -136,7 +136,7 @@
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)} (${longitude.toFixed(2)}&deg;)`;
+        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)} (${longitude.toFixed(3)}&deg;)`;
     }
 
     function getYear(date) {
