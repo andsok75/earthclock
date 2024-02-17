@@ -25,19 +25,28 @@
         const graticule = d3.geoGraticule()
             .step([36, 90]);
         const projection = d3.geoOrthographic()
-            .clipAngle(180)
             .scale(500)
             .translate([500, 500])
             .rotate([0, -90, 0]);
+
         const path = d3.geoPath().projection(projection);
-        d3.select("svg").selectAll("path").data(countries.features)
+
+        projection.clipAngle(180);
+        d3.select("svg").selectAll(".back-country").data(countries.features)
             .enter()
-            .append("path")
-            .attr("d", path)
-            .attr("class", "countries");
+            .insert("path")
+            .attr("class", "back-country")
+            .attr("d", path);
         d3.select("svg").append("path")
             .datum(graticule)
             .attr("class", "graticule")
+            .attr("d", path);
+
+        projection.clipAngle(90);
+        d3.select("svg").selectAll(".country").data(countries.features)
+            .enter()
+            .insert("path")
+            .attr("class", "country")
             .attr("d", path);
     }
 

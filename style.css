@@ -27,17 +27,24 @@
     margin-right: 20px;
 }
 
-path.countries {
-    stroke-width: 0.4;
+path.country {
+    stroke-width: 0.5;
     stroke: #5753a0;
-    fill: #b4e3f0;
+    fill: #7dc7dc;
+    fill-opacity: 0.5;
+}
+
+path.back-country {
+    stroke-width: 0.5;
+    stroke: #7e7cac;
+    fill: #b6dde8;
     fill-opacity: 0.5;
 }
 
 path.graticule {
     fill: none;
     stroke-width: 1;
-    stroke: #9A8B7A;
+    stroke: #827669;
 }
 
 #globe {
