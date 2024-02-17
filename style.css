@@ -1,5 +1,4 @@
 #time {
-    width:100%;
     display: flex;
     justify-content: center;
     font-size: 10vw;
@@ -8,7 +7,6 @@
 }
 
 #tenDayTime {
-    width:100%;
     display: flex;
     justify-content: center;
     font-size: 2vw;
@@ -18,7 +16,6 @@
 }
 
 #localTime {
-    width:100%;
     display: flex;
     justify-content: center;
     font-size: 4.5vw;
@@ -43,7 +40,7 @@ path.back-country {
 
 path.graticule {
     fill: none;
-    stroke-width: 1;
+    stroke-width: 2;
     stroke: #827669;
 }
 
@@ -55,7 +52,7 @@ path.sun {
 
 path.local-noon {
     fill: none;
-    stroke-width: 0.5;
+    stroke-width: 1;
     stroke: #d87d1c;
 }
 
