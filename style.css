@@ -2,19 +2,34 @@
     width:100%;
     display: flex;
     justify-content: center;
-    font-size: 55px;
+    font-size: 65px;
 }
 
 #tenDayTime {
     width:100%;
     display: flex;
     justify-content: center;
-    font-size: 30px;
+    font-size: 15px;
+    color: #8a8a8a;
 }
 
 #localTime {
     width:100%;
     display: flex;
     justify-content: center;
-    font-size: 20px;
+    font-size: 32px;
+    color: #8a8a8a;
+}
+
+path.countries {
+    stroke-width: 0.4;
+    stroke: #5753a0;
+    fill: #b4e3f0;
+    fill-opacity: 0.8;
+}
+
+path.graticule {
+    fill: none;
+    stroke-width: 1;
+    stroke: #9A8B7A;
 }

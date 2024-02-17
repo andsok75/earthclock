@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="style.css">
   <title></title>
+
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+
   <script type="text/javascript">
     let longitude = undefined;
 
     window.onload = function() {
+        d3.json("countries.geojson", createMap);
+        setInterval(updateTime, 1);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 longitude = position.coords.longitude;
@@ -16,8 +21,27 @@
                 console.log(error);
             });
         }
-        setInterval(updateTime, 1);
     };
+
+    function createMap(countries) {
+        const graticule = d3.geoGraticule()
+            .step([36, 90]);
+        const projection = d3.geoOrthographic()
+            .clipAngle(150)
+            .scale(260)
+            .translate([325, 325])
+            .rotate([0, -90, 0]);
+        const path = d3.geoPath().projection(projection);
+        d3.select("svg").selectAll("path").data(countries.features)
+            .enter()
+            .append("path")
+            .attr("d", path)
+            .attr("class", "countries");
+        d3.select("svg").append("path")
+            .datum(graticule)
+            .attr("class", "graticule")
+            .attr("d", path);
+    }
 
     function updateTime() {
         // This function updates the time, that is UTC time expressed as years and days with decimal fractions.
@@ -51,7 +75,10 @@
 
         document.getElementById('tenDayTime').innerHTML = `${tenDayTime.hour.p(2)}:${tenDayTime.minute.p(2)}:${tenDayTime.second.p(2)} of week ${tenDayTime.week} of year ${tenDayTime.year}`;
 
-        if (longitude === undefined) { return; }
+        if (longitude === undefined) { 
+            document.getElementById('localTime').innerHTML = "&nbsp;";
+            return;
+        }
 
         // Longitude below is measured in decimal seconds, as an integer ranging from 0 up to 100000.
         // Greenwich meridian is at 50000 and Sydney is at 92000 decimal seconds.
@@ -63,7 +90,7 @@
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${longitude} (noon ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)})`;
+        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)} (${longitude}&deg;)`;
     }
 
     function getYear(date) {
@@ -114,5 +141,6 @@
     <div id="time"></div>
     <div id="tenDayTime"></div>
     <div id="localTime"></div>
+    <svg align="center" style="width:650px;height:650px;"></svg>
   </body>
 </html>
