@@ -7,9 +7,9 @@
   <title></title>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script type="text/javascript">
-    let globe = false;
-    let sunPath = false;
-    let localNoonPath = false;
+    let globeInitialized = false;
+    let currentSunPathInitialized = false;
+    let localNoonPathInitialized = false;
     let longitude = undefined;
     let secondOfDay = undefined;
 
@@ -18,10 +18,8 @@
             .translate([500, 500])
             .rotate(rotation(0));
     const path = d3.geoPath().projection(projection);
-
-    function rotation(roll, pitch=-90, yaw=0) {
-        return [roll, pitch, yaw];
-    }
+    const graticule = d3.geoGraticule().step([36, 90]);
+    const sun = d3.geoGraticule().step([360, 0]);
 
     window.onload = function() {
         d3.json("countries.geojson", createMap);
@@ -38,41 +36,57 @@
 
     function createMap(countries) {
         projection.clipAngle(180);
-        d3.select("svg").selectAll(".back-country").data(countries.features)
+        d3.select("svg").selectAll(".country-back").data(countries.features)
             .enter()
             .append("path")
-            .attr("class", "back-country")
+            .attr("class", "country-back")
             .attr("d", path);
-
-        const graticule = d3.geoGraticule().step([36, 90]);
-        d3.select("svg").append("path")
-            .datum(graticule)
-            .attr("class", "graticule")
-            .attr("d", path);
-
         projection.clipAngle(90);
         d3.select("svg").selectAll(".country").data(countries.features)
             .enter()
             .append("path")
             .attr("class", "country")
             .attr("d", path);
-        globe = true;
+
+        projection.clipAngle(180);
+        d3.select("svg").insert("path", "path.country")
+            .datum(graticule)
+            .attr("class", "graticule-back")
+            .attr("d", path);
+        projection.clipAngle(90);
+        d3.select("svg").insert("path")
+            .datum(graticule)
+            .attr("class", "graticule")
+            .attr("d", path);
+
+        globeInitialized = true;
     }
 
     function updateSun() {
-        if (!globe) { return; }
+        if (!globeInitialized) { return; }
+
         if (secondOfDay === undefined) { return; }
-
         projection.rotate(rotation(180*(1-secondOfDay/50000)));
-        sun = d3.geoGraticule().step([360, 0]);
 
-        if (!sunPath) {
+        if (!currentSunPathInitialized) {
+            projection.clipAngle(180);
+            d3.select("svg").insert("path", "path.country")
+                .datum(sun)
+                .attr("class", "sun-back")
+                .attr("d", path);
+            projection.clipAngle(90);
             d3.select("svg").insert("path")
                 .datum(sun)
                 .attr("class", "sun")
                 .attr("d", path);
-            sunPath = true;
+            currentSunPathInitialized = true;
         } else {
+            projection.clipAngle(180);
+            d3.select("svg").selectAll(".sun-back")
+                .datum(sun)
+                .attr("class", "sun-back")
+                .attr("d", path);
+            projection.clipAngle(90);
             d3.select("svg").selectAll(".sun")
                 .datum(sun)
                 .attr("class", "sun")
@@ -80,16 +94,25 @@
         }
 
         if (longitude === undefined) { return; }
+        projection.rotate(rotation(longitude));
 
-        if (!localNoonPath) {
-            projection.rotate(rotation(longitude));
-            localNoon = d3.geoGraticule().step([360, 0]);
+        if (!localNoonPathInitialized) {
+            projection.clipAngle(180);
+            d3.select("svg").insert("path", "path.country")
+                .datum(sun)
+                .attr("class", "local-noon-back")
+                .attr("d", path);
+            projection.clipAngle(90);
             d3.select("svg").insert("path")
-                .datum(localNoon)
+                .datum(sun)
                 .attr("class", "local-noon")
                 .attr("d", path);
-            localNoonPath = true;
+            localNoonPathInitialized = true;
         }
+    }
+
+    function rotation(roll, pitch=-90, yaw=0) {
+        return [roll, pitch, yaw];
     }
 
     function updateTime() {

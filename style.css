@@ -31,7 +31,7 @@ path.country {
     fill-opacity: 0.5;
 }
 
-path.back-country {
+path.country-back {
     stroke-width: 0.5;
     stroke: #7e7cac;
     fill: #b6dde8;
@@ -44,10 +44,22 @@ path.graticule {
     stroke: #827669;
 }
 
+path.graticule-back {
+    fill: none;
+    stroke-width: 2;
+    stroke: #c2bbb4;
+}
+
 path.sun {
     fill: none;
     stroke-width: 8;
     stroke: #d87d1c;
+}
+
+path.sun-back {
+    fill: none;
+    stroke-width: 8;
+    stroke: #f0cea7;
 }
 
 path.local-noon {
@@ -55,6 +67,13 @@ path.local-noon {
     stroke-width: 1;
     stroke: #d87d1c;
 }
+
+path.local-noon-back {
+    fill: none;
+    stroke-width: 1;
+    stroke: #f0cea7;
+}
+
 
 #globe {
     margin: 20px;
