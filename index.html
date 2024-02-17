@@ -8,6 +8,8 @@
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script type="text/javascript">
     let globe = false;
+    let sunPath = false;
+    let localNoonPath = false;
     let longitude = undefined;
     let secondOfDay = undefined;
 
@@ -19,7 +21,7 @@
 
     window.onload = function() {
         d3.json("countries.geojson", createMap);
-        setInterval(updateTime, 10);
+        setInterval(updateTime, 100);
         setInterval(updateSun, 1000);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -34,12 +36,12 @@
         projection.clipAngle(180);
         d3.select("svg").selectAll(".back-country").data(countries.features)
             .enter()
-            .insert("path")
+            .append("path")
             .attr("class", "back-country")
             .attr("d", path);
 
         const graticule = d3.geoGraticule().step([36, 90]);
-        d3.select("svg").insert("path")
+        d3.select("svg").append("path")
             .datum(graticule)
             .attr("class", "graticule")
             .attr("d", path);
@@ -47,7 +49,7 @@
         projection.clipAngle(90);
         d3.select("svg").selectAll(".country").data(countries.features)
             .enter()
-            .insert("path")
+            .append("path")
             .attr("class", "country")
             .attr("d", path);
         globe = true;
@@ -58,20 +60,32 @@
         if (secondOfDay === undefined) { return; }
 
         projection.rotate([180*(1-secondOfDay/50000), -90, 0]);
-        const sun = d3.geoGraticule().step([360, 0]);
-        d3.select("svg").insert("path")
-            .datum(sun)
-            .attr("class", "sun")
-            .attr("d", path);
+        sun = d3.geoGraticule().step([360, 0]);
+
+        if (!sunPath) {
+            d3.select("svg").insert("path")
+                .datum(sun)
+                .attr("class", "sun")
+                .attr("d", path);
+            sunPath = true;
+        } else {
+            d3.select("svg").selectAll(".sun")
+                .datum(sun)
+                .attr("class", "sun")
+                .attr("d", path);
+        }
 
         if (longitude === undefined) { return; }
 
-        projection.rotate([longitude, -90, 0]);
-        const localNoon = d3.geoGraticule().step([360, 0]);
-        d3.select("svg").insert("path")
-            .datum(localNoon)
-            .attr("class", "local-noon")
-            .attr("d", path);
+        if (!localNoonPath) {
+            projection.rotate([longitude, -90, 0]);
+            localNoon = d3.geoGraticule().step([360, 0]);
+            d3.select("svg").insert("path")
+                .datum(localNoon)
+                .attr("class", "local-noon")
+                .attr("d", path);
+            localNoonPath = true;
+        }
     }
 
     function updateTime() {
@@ -122,7 +136,7 @@
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)} (${longitude}&deg;)`;
+        document.getElementById('localTime').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)} (${longitude.toFixed(2)}&deg;)`;
     }
 
     function getYear(date) {
