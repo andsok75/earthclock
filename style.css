@@ -21,7 +21,7 @@
     width:100%;
     display: flex;
     justify-content: center;
-    font-size: 5vw;
+    font-size: 4.5vw;
     color: #8a8a8a;
     margin-left: 20px;
     margin-right: 20px;
@@ -45,6 +45,18 @@ path.graticule {
     fill: none;
     stroke-width: 1;
     stroke: #827669;
+}
+
+path.sun {
+    fill: none;
+    stroke-width: 8;
+    stroke: #d87d1c;
+}
+
+path.local-noon {
+    fill: none;
+    stroke-width: 0.5;
+    stroke: #d87d1c;
 }
 
 #globe {

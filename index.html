@@ -7,11 +7,20 @@
   <title></title>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script type="text/javascript">
+    let globe = false;
     let longitude = undefined;
+    let secondOfDay = undefined;
+
+    const projection = d3.geoOrthographic()
+            .scale(500)
+            .translate([500, 500])
+            .rotate([0, -90, 0]);
+    const path = d3.geoPath().projection(projection);
 
     window.onload = function() {
         d3.json("countries.geojson", createMap);
-        setInterval(updateTime, 1);
+        setInterval(updateTime, 10);
+        setInterval(updateSun, 1000);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 longitude = position.coords.longitude;
@@ -22,22 +31,15 @@
     };
 
     function createMap(countries) {
-        const graticule = d3.geoGraticule()
-            .step([36, 90]);
-        const projection = d3.geoOrthographic()
-            .scale(500)
-            .translate([500, 500])
-            .rotate([0, -90, 0]);
-
-        const path = d3.geoPath().projection(projection);
-
         projection.clipAngle(180);
         d3.select("svg").selectAll(".back-country").data(countries.features)
             .enter()
             .insert("path")
             .attr("class", "back-country")
             .attr("d", path);
-        d3.select("svg").append("path")
+
+        const graticule = d3.geoGraticule().step([36, 90]);
+        d3.select("svg").insert("path")
             .datum(graticule)
             .attr("class", "graticule")
             .attr("d", path);
@@ -47,6 +49,28 @@
             .enter()
             .insert("path")
             .attr("class", "country")
+            .attr("d", path);
+        globe = true;
+    }
+
+    function updateSun() {
+        if (!globe) { return; }
+        if (secondOfDay === undefined) { return; }
+
+        projection.rotate([180*(1-secondOfDay/50000), -90, 0]);
+        const sun = d3.geoGraticule().step([360, 0]);
+        d3.select("svg").insert("path")
+            .datum(sun)
+            .attr("class", "sun")
+            .attr("d", path);
+
+        if (longitude === undefined) { return; }
+
+        projection.rotate([longitude, -90, 0]);
+        const localNoon = d3.geoGraticule().step([360, 0]);
+        d3.select("svg").insert("path")
+            .datum(localNoon)
+            .attr("class", "local-noon")
             .attr("d", path);
     }
 
@@ -70,7 +94,8 @@
         const date = new Date();
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
-        const secondOfDay = getDecimalSecondOfDay(date);
+
+        secondOfDay = getDecimalSecondOfDay(date);
 
         document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${secondOfDay.p(5)}`;
 
