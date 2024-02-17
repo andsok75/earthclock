@@ -23,8 +23,8 @@
 
     window.onload = function() {
         d3.json("countries.geojson", createMap);
-        setInterval(updateTime, 100);
-        setInterval(updateSun, 1000);
+        setInterval(updateTime, 86);
+        setInterval(updateSun, 864);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 longitude = position.coords.longitude;
