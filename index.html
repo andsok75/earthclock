@@ -16,8 +16,12 @@
     const projection = d3.geoOrthographic()
             .scale(500)
             .translate([500, 500])
-            .rotate([0, -90, 0]);
+            .rotate(rotation(0));
     const path = d3.geoPath().projection(projection);
+
+    function rotation(roll, pitch=-90, yaw=0) {
+        return [roll, pitch, yaw];
+    }
 
     window.onload = function() {
         d3.json("countries.geojson", createMap);
@@ -59,7 +63,7 @@
         if (!globe) { return; }
         if (secondOfDay === undefined) { return; }
 
-        projection.rotate([180*(1-secondOfDay/50000), -90, 0]);
+        projection.rotate(rotation(180*(1-secondOfDay/50000)));
         sun = d3.geoGraticule().step([360, 0]);
 
         if (!sunPath) {
@@ -78,7 +82,7 @@
         if (longitude === undefined) { return; }
 
         if (!localNoonPath) {
-            projection.rotate([longitude, -90, 0]);
+            projection.rotate(rotation(longitude));
             localNoon = d3.geoGraticule().step([360, 0]);
             d3.select("svg").insert("path")
                 .datum(localNoon)
