@@ -24,6 +24,12 @@
     margin-right: 20px;
 }
 
+#globe {
+    margin: 5px;
+    border: 2px dotted;
+    padding: 15px;
+}
+
 path.country {
     stroke-width: 0.5;
     stroke: #5753a0;
@@ -72,9 +78,4 @@ path.local-noon-back {
     fill: none;
     stroke-width: 1;
     stroke: #f0cea7;
-}
-
-
-#globe {
-    margin: 20px;
 }
