@@ -59,14 +59,13 @@
             .attr("class", "graticule")
             .attr("d", path);
 
-        d3.select("svg").selectAll("text")
+        d3.select("svg").selectAll(".text")
             .data([...Array(10).keys()])
             .enter()
             .append("text")
             .text(function(d) { return d; })
             .attr("class", "label")
-            .attr("style", "text-anchor:middle")
-            .attr("font-size", "4vw")
+            .attr("style", "text-anchor:middle;font-size:4vw")
             .attr("dy", "1%")
             .attr("transform", function(d) {
                 const p = projection([180-d*36, 0]);
