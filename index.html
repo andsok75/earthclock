@@ -178,7 +178,7 @@
         }
 
         // Longitude below is measured in decimal seconds, as an integer ranging from 0 up to 100000.
-        // Greenwich meridian is at 50000 and Sydney is at 92000 decimal seconds.
+        // Greenwich meridian is at 50000 and Sydney is at 8000 decimal seconds.
         const longitudeInSeconds = Math.trunc(100000*(longitude+180)/360);
         const secondOfDayAtLocalNoon = 100000-longitudeInSeconds;
         const timeAtLocalNoon = getTimeFromDecimalSeconds(secondOfDayAtLocalNoon);
