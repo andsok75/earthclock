@@ -17,9 +17,9 @@
     let secondOfDay = undefined;
 
     const projection = d3.geoOrthographic()
-            .scale(svgViewBoxSize/2)
-            .translate([svgViewBoxSize/2, svgViewBoxSize/2])
-            .rotate(rotation(0));
+        .scale(svgViewBoxSize/2)
+        .translate([svgViewBoxSize/2, svgViewBoxSize/2])
+        .rotate(rotation(0));
     const path = d3.geoPath().projection(projection);
     const graticule = d3.geoGraticule().step([36, 90]);
     const sun = d3.geoGraticule().step([360, 0]);
