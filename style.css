@@ -22,11 +22,12 @@
     color: #8a8a8a;
     margin-left: 20px;
     margin-right: 20px;
+    margin-bottom: 20px;
 }
 
 #globe {
-    margin: 5px;
-    padding: 15px;
+    margin: 10px;
+    padding: 25px;
 }
 
 path.country {
