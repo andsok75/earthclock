@@ -170,7 +170,7 @@
             ...getTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
         };
 
-        document.getElementById('timeColonized').innerHTML = `${tenDayTime.hour.p(2)}:${tenDayTime.minute.p(2)}:${tenDayTime.second.p(2)} of week ${tenDayTime.week} of year ${tenDayTime.year}`;
+        document.getElementById('timeColonized').innerHTML = `${tenDayTime.hour.p(2)}:${tenDayTime.minute.p(2)}:${tenDayTime.second.p(2)} of week ${tenDayTime.week.p(2)} of year ${tenDayTime.year}`;
 
         if (longitude === undefined) { return; }
 
@@ -185,7 +185,7 @@
             period: period
         };
         document.getElementById('localTime').innerHTML = `0.${secondsToLocalNoon.p(5)}${localTime.period} at 0.${secondOfDayAtLocalNoon.p(5)} (${longitude.toFixed(3)}&deg;)`;
-        document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)} (${longitude.toFixed(3)}&deg;)`;
+        document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
     }
 
     function getYear(date) {
