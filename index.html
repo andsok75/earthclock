@@ -73,7 +73,7 @@
             .append("text")
             .text(function(d) { return d/10; })
             .attr("class", "label")
-            .attr("style", "text-anchor:middle;font-size:200%")
+            .attr("style", "text-anchor:middle;font-family:monospace;font-size:200%")
             .attr("dy", "1.25%")
             .attr("transform", function(d) {
                 const p = projection([180-d*36, 0]);
