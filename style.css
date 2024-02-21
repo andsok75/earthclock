@@ -56,15 +56,15 @@ path.country-back {
     fill-opacity: 0.5;
 }
 
-path.graticule {
+path.hours {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 1.5   ;
     stroke: #827669;
 }
 
-path.graticule-back {
+path.hours-back {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 1.5;
     stroke: #c2bbb4;
 }
 
@@ -82,12 +82,12 @@ path.sun-back {
 
 path.local-noon {
     fill: none;
-    stroke-width: 1;
+    stroke-width: 1.5;
     stroke: #d87d1c;
 }
 
 path.local-noon-back {
     fill: none;
-    stroke-width: 1;
+    stroke-width: 1.5;
     stroke: #f0cea7;
 }
