@@ -20,11 +20,11 @@
         .translate([svgViewBoxSize/2, svgViewBoxSize/2])
         .rotate(rotation(0));
     const path = d3.geoPath().projection(projection);
+    const sunLine = d3.geoGraticule().step([360, 0]);
     const base = 10;
     const hourLines = d3.geoGraticule().step([360/base, 90]);
     const hours = [...Array(base).keys()];
-    function hourText(i) { return i/base; }
-    const sunLine = d3.geoGraticule().step([360, 0]);
+    function hourText(i) { return i; }
 
     window.onload = async function() {
         const text = await fetchgzip("countries.geojson.gz");
