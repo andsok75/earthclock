@@ -32,7 +32,7 @@
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 longitude = position.coords.longitude;
-                console.log(`obtained longitude ${longitude}`);
+                console.log(`obtained longitude ${longitude}&deg;`);
             }, function(error) {
                 console.log(error);
             });
@@ -195,8 +195,8 @@
             ...getTimeFromDecimalSeconds(secondsToLocalNoon),
             period: period
         };
-        document.getElementById('localTime').innerHTML = `0.${secondsToLocalNoon.p(5)}${localTime.period} at 0.${secondOfDayAtLocalNoon.p(5)} (${longitude.toFixed(3)}&deg;)`;
-        document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)}${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
+        //document.getElementById('localTime').innerHTML = `0.${secondsToLocalNoon.p(5)} ${localTime.period} at 0.${secondOfDayAtLocalNoon.p(5)}`;
+        document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)} ${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
     }
 
     function getYear(date) {
@@ -234,7 +234,7 @@
     function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
         const s = secondOfDay-secondOfDayAtLocalNoon;
         const secondsToLocalNoon = -50000 < s && s < 50000 ? Math.abs(s) : 100000-Math.abs(s);
-        const period = (-50000 <= s && s < 0) || 50000 <= s ? "am" : "pm";
+        const period = (-50000 <= s && s < 0) || 50000 <= s ? "till noon" : "since noon";
         return [secondsToLocalNoon, period];
     }
 
