@@ -72,12 +72,14 @@ path.sun {
     fill: none;
     stroke-width: 8;
     stroke: #d87d1c;
+    stroke-linecap: round;
 }
 
 path.sun-back {
     fill: none;
     stroke-width: 8;
     stroke: #f0cea7;
+    stroke-linecap: round;
 }
 
 path.local-noon {

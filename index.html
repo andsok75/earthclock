@@ -22,7 +22,7 @@
     const path = d3.geoPath().projection(projection);
     const sunLine = d3.geoGraticule().step([360, 0]);
     const base = 10;
-    const hourLines = d3.geoGraticule().step([360/base, 90]);
+    const hourLines = d3.geoGraticule().step([360/base, 90]).extent([[-180, -89.6], [180, 89.6]]);
     const hours = [...Array(base).keys()];
     function hourText(i) { return i; }
 
