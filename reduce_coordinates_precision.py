@@ -15,10 +15,10 @@ def round_point(point, n):
     return [round(point[0], n), round(point[1], n)]
 
 
-file_name = sys.argv[1]
-precision = int(sys.argv[2])
+file_name = "countries.geojson"
+precision = 2
 
-print(f"converting file {file_name} to precision {precision}")
+print(f"converting file {file_name} to coordinates precision {precision}")
 
 countries = json.load(open(file_name))
 

@@ -62,7 +62,7 @@
             .append("path")
             .attr("class", "country-back")
             .attr("d", path);
-        console.log("creating countries");
+        console.log("creating front countries");
         projection.clipAngle(90);
         d3.select("svg").selectAll(".country").data(countries.features)
             .enter()
@@ -173,7 +173,7 @@
 
         secondOfDay = getDecimalSecondOfDay(date);
 
-        document.getElementById('time').innerHTML = `${year}-${dayOfYear.p(3)}.${secondOfDay.p(5)}`;
+        document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${secondOfDay.p(5)}`;
 
         const tenDayTime = {
             year: year,

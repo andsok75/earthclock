@@ -1,6 +1,7 @@
 Countries GeoJSON from https://datahub.io/core/geo-countries
 
-Compress file by converting to lower precision, e.g. 2, with
+Reduce size of countries geojson by converting coordinates to lower precision and gzipping
 ```
-python compress_geojson.py countries.geojson 2
+python reduce_coordinates_precision.py
+gzip countries.geojson
 ```
