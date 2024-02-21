@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="style.css">
   <title></title>
-  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     const svgViewBoxSize = 1000;
 
-    let globeCreated = false;
     let currentSunPathInitialized = false;
     let localNoonPathInitialized = false;
 
@@ -24,31 +23,46 @@
     const graticule = d3.geoGraticule().step([36, 90]);
     const sun = d3.geoGraticule().step([360, 0]);
 
-    window.onload = function() {
-        d3.json("countries.geojson", createGlobe);
+    window.onload = async function() {
+        const text = await fetchgzip("countries.geojson.gz");
+        const countries = JSON.parse(text);
+        createGlobe(countries);
         setInterval(updateTime, 87);
         setInterval(updateSun, 864);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 longitude = position.coords.longitude;
+                console.log(`obtained longitude ${longitude}`);
             }, function(error) {
                 console.log(error);
             });
         }
     };
 
+    async function fetchgzip(url) {
+        console.log(`fetching ${url}`);
+        const response = await fetch(url);
+        const compressedBlob = await response.blob();
+        const stream = compressedBlob.stream().pipeThrough(new DecompressionStream("gzip"));
+        const blob = await new Response(stream).blob();
+        return await blob.text();
+    }
+
     function createGlobe(countries) {
+        console.log("creating globe");
         d3.select("svg")
             .attr("viewBox", `0 0 ${svgViewBoxSize} ${svgViewBoxSize}`)
             .attr("preserveAspectRatio", "xMidYMid meet")
             .attr("overflow", "visible");
 
+        console.log("creating back countries");
         projection.clipAngle(180);
         d3.select("svg").selectAll(".country-back").data(countries.features)
             .enter()
             .append("path")
             .attr("class", "country-back")
             .attr("d", path);
+        console.log("creating countries");
         projection.clipAngle(90);
         d3.select("svg").selectAll(".country").data(countries.features)
             .enter()
@@ -56,6 +70,7 @@
             .attr("class", "country")
             .attr("d", path);
 
+        console.log("decorating globe");
         projection.clipAngle(180);
         d3.select("svg").insert("path", "path.country")
             .datum(graticule)
@@ -82,13 +97,9 @@
                 p[1] += f*(p[1]-svgViewBoxSize/2);
                 return `translate(${p})`;
             });
-
-        globeCreated = true;
     }
 
     function updateSun() {
-        if (!globeCreated) { return; }
-
         if (secondOfDay === undefined) { return; }
         projection.rotate(rotation(180*(1-secondOfDay/50000)));
 
