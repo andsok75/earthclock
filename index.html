@@ -28,8 +28,10 @@
 
     window.onload = async function() {
         const text = await fetchgzip("countries.geojson.gz");
+        console.log("parsing countries geojson");
         const countries = JSON.parse(text);
         createGlobe(countries);
+        console.log("running timers");
         setInterval(updateTime, 87);
         setInterval(updateSun, 864);
         if (navigator.geolocation) {
@@ -46,6 +48,7 @@
         console.log(`fetching ${url}`);
         const response = await fetch(url);
         const compressedBlob = await response.blob();
+        console.log(`unzipping ${url}`);
         const stream = compressedBlob.stream().pipeThrough(new DecompressionStream("gzip"));
         const blob = await new Response(stream).blob();
         return await blob.text();
