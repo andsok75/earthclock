@@ -39,4 +39,4 @@ for f in countries["features"]:
     else:
         raise Exception(f"unexpected polygon type {t}")
 
-json.dump(countries, open(file_name, "w"))
+json.dump(countries, open(file_name, "w"), separators=(',', ':'))
