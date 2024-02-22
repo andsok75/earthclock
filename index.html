@@ -174,11 +174,10 @@
     function updateTime() {
         // This function updates the time, that is UTC time expressed as years and days with decimal fractions.
         // The same time is also shown as decimal hours, minutes, and seconds in the current ten-day week.
+        // It can show traditional time too if options are set to traditional values.
         //
-        // The time at local noon is the UTC time expressed in decimal units as above at the moment when the mean sun passes the local medirian.
-        // The local time is the time to local noon expressed in decimal units.
-        // The pm period tells you how much time has passed since noon, and the am period tells you how much time remains until noon.
-        // For instance, 1:95:14am mean there are decimal 1 hour, 95 minutes and 14 seconds remaining until noon at the given longitude.
+        // The time at local noon is the UTC time at the moment when the mean sun passes the local medirian.
+        // The local time is the time till local noon in the morning or since local noon in the evening.
         //
         // Note that the mean sun is usually different from the apparent sun, so apparent noon may be ahead or behind the mean noon by a few minutes.
         // For details, see https://en.wikipedia.org/wiki/Equation_of_time
