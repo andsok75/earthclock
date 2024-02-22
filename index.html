@@ -7,53 +7,52 @@
   <title></title>
   <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
   <script type="text/javascript">
-    const svgViewBoxSize = 1000;
-
-    const decimalOpt = {
+    const decimalSystem = {
+        name: "decimal",
         daysInWeek: 10,
         hoursInDay: 10,
         minutesInHour: 100,
-        secondsInMinute: 100
+        secondsInMinute: 100,
+        secondsInHour: 100*100,
+        secondsInDay: 10*100*100
     };
-    const traditionalOpt = {
+    const traditionalSystem = {
+        name: "traditional",
         daysInWeek: 7,
         hoursInDay: 24,
         minutesInHour: 60,
-        secondsInMinute: 60
+        secondsInMinute: 60,
+        secondsInHour: 60*60,
+        secondsInDay: 24*60*60
     }
-    opt = decimalOpt;
-    function secondsInDay() { return opt.hoursInDay*opt.minutesInHour*opt.secondsInMinute; }
-    function traditionalMillisecondsInSecond() { return 24*60*60*1000/secondsInDay(); }  // 1000 if traditional system is used or 864 if decimal system is used
-
-    let currentSunLineInitialized = false;
-    let localNoonLineInitialized = false;
-
-    let longitude = undefined;
-    let secondOfDay = undefined;
-
+    const defaultSystem = decimalSystem;
+    const svgViewBoxSize = 1000;
     const projection = d3.geoOrthographic()
         .scale(svgViewBoxSize/2)
         .translate([svgViewBoxSize/2, svgViewBoxSize/2])
-        .rotate(rotation(0));
+        .rotate(rotation());
     const path = d3.geoPath().projection(projection);
-    const sunLine = d3.geoGraticule().step([360, 0]);
-    function hourLines() { return d3.geoGraticule().step([360/opt.hoursInDay, 90]).extent([[-180, -89.6], [180, 89.6]]); }
-    function hours() { return [...Array(opt.hoursInDay).keys()]; }
-    function hourText(i) { return i; }
+    const meridian = d3.geoGraticule().step([360, 0]);
+
+    function rotation(roll=0, pitch=-90, yaw=0) { return [roll, pitch, yaw]; }
+
+    let userSelectedSystem = defaultSystem;
+    let userLongitude = undefined;
+    let sunMeridianInitialized = false;
 
     window.onload = async function() {
         const text = await fetchgzip("countries.geojson.gz");
         console.log("parsing countries geojson");
         const countries = JSON.parse(text);
         addCountries(countries);
-        addHourLines();
-        console.log("running timers");
-        setInterval(updateTime, traditionalMillisecondsInSecond()/10);
-        setInterval(updateSun, traditionalMillisecondsInSecond());
+        updateHourMeridians(defaultSystem);
+        console.log("running time updater");
+        setInterval(updateTime, 100);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                longitude = position.coords.longitude;
-                console.log(`obtained longitude ${longitude}`);
+                userLongitude = position.coords.longitude;
+                addUserMeridian(userLongitude);
+                console.log(`obtained user longitude ${userLongitude}`);
             }, function(error) {
                 console.log(error);
             });
@@ -61,19 +60,18 @@
     };
 
     function updateSystem() {
-        const system = document.getElementById("select-system").value;
-        secondOfDay = undefined;
-        switch(system) {
-            case "decimal":
-                opt = decimalOpt;
+        const systemName = document.getElementById("select-system").value;
+        switch(systemName) {
+            case decimalSystem.name:
+                userSelectedSystem = decimalSystem;
                 break;
-            case "traditional":
-                opt = traditionalOpt;
+            case traditionalSystem.name:
+                userSelectedSystem = traditionalSystem;
                 break;
             default:
-                throw Error(`unimpelemted system ${system}`);
+                throw Error(`unimpelemted system ${systemName}`);
         }
-        addHourLines();
+        updateHourMeridians(userSelectedSystem);
     }
 
     async function fetchgzip(url) {
@@ -93,7 +91,7 @@
             .attr("overflow", "visible");
 
         console.log("creating back countries");
-        projection.rotate(rotation(0));
+        projection.rotate(rotation());
         projection.clipAngle(180);
         d3.select("svg").selectAll(".country-back").data(countries.features)
             .enter()
@@ -109,35 +107,37 @@
             .attr("d", path);
     }
 
-    function addHourLines() {
-        console.log("decorating globe");
+    function updateHourMeridians(system) {
+        console.log("updating hour meridians");
 
-        d3.selectAll(".hours").remove();
-        d3.selectAll(".hours-back").remove();
-        d3.selectAll(".hours-label").remove();
+        projection.rotate(rotation());
+        meridians = d3.geoGraticule().step([360/system.hoursInDay, 90]).extent([[-180, -89.6], [180, 89.6]]);
 
-        projection.rotate(rotation(0));
+        d3.selectAll(".hour-meridian").remove();
+        d3.selectAll(".hour-meridian-back").remove();
+        d3.selectAll(".hour-meridian-label").remove();
+
         projection.clipAngle(180);
         d3.select("svg").insert("path", "path.country")
-            .datum(hourLines())
-            .attr("class", "hours-back")
+            .datum(meridians)
+            .attr("class", "hour-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
-        d3.select("svg").insert("path", "path.sun")
-            .datum(hourLines())
-            .attr("class", "hours")
+        d3.select("svg").insert("path", "path.sun-meridian")
+            .datum(meridians)
+            .attr("class", "hour-meridian")
             .attr("d", path);
 
         d3.select("svg").selectAll(".text")
-            .data(hours())
+            .data([...Array(system.hoursInDay).keys()])
             .enter()
             .append("text")
             .text(function(i) { return i; })
-            .attr("class", "hours-label")
+            .attr("class", "hour-meridian-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:200%")
             .attr("dy", "1.25%")
             .attr("transform", function(i) {
-                const p = projection([180-i*360/opt.hoursInDay, 0]);
+                const p = projection([180-i*360/system.hoursInDay, 0]);
                 const f = 0.04;
                 p[0] += f*(p[0]-svgViewBoxSize/2);
                 p[1] += f*(p[1]-svgViewBoxSize/2);
@@ -145,55 +145,47 @@
             });
     }
 
-    function updateSun() {
-        if (secondOfDay === undefined) { return; }
-        projection.rotate(rotation(180*(1-secondOfDay/(secondsInDay()/2))));
+    function updateSunMeridian(sunLongitude) {
+        projection.rotate(rotation(sunLongitude));
 
-        if (!currentSunLineInitialized) {
+        if (!sunMeridianInitialized) {
             projection.clipAngle(180);
             d3.select("svg").insert("path", "path.country")
-                .datum(sunLine)
-                .attr("class", "sun-back")
+                .datum(meridian)
+                .attr("class", "sun-meridian-back")
                 .attr("d", path);
             projection.clipAngle(90);
             d3.select("svg").insert("path")
-                .datum(sunLine)
-                .attr("class", "sun")
+                .datum(meridian)
+                .attr("class", "sun-meridian")
                 .attr("d", path);
-            currentSunLineInitialized = true;
+            sunMeridianInitialized = true;
         } else {
             projection.clipAngle(180);
-            d3.select("svg").selectAll(".sun-back")
-                .datum(sunLine)
-                .attr("class", "sun-back")
+            d3.select("svg").selectAll(".sun-meridian-back")
+                .datum(meridian)
+                .attr("class", "sun-meridian-back")
                 .attr("d", path);
             projection.clipAngle(90);
-            d3.select("svg").selectAll(".sun")
-                .datum(sunLine)
-                .attr("class", "sun")
+            d3.select("svg").selectAll(".sun-meridian")
+                .datum(meridian)
+                .attr("class", "sun-meridian")
                 .attr("d", path);
-        }
-
-        if (longitude === undefined) { return; }
-        projection.rotate(rotation(longitude));
-
-        if (!localNoonLineInitialized) {
-            projection.clipAngle(180);
-            d3.select("svg").insert("path", "path.country")
-                .datum(sunLine)
-                .attr("class", "local-noon-back")
-                .attr("d", path);
-            projection.clipAngle(90);
-            d3.select("svg").insert("path", "path.sun")
-                .datum(sunLine)
-                .attr("class", "local-noon")
-                .attr("d", path);
-            localNoonLineInitialized = true;
         }
     }
 
-    function rotation(roll, pitch=-90, yaw=0) {
-        return [roll, pitch, yaw];
+    function addUserMeridian(userLongitude) {
+        projection.rotate(rotation(userLongitude));
+        projection.clipAngle(180);
+        d3.select("svg").insert("path", "path.country")
+            .datum(meridian)
+            .attr("class", "user-meridian-back")
+            .attr("d", path);
+        projection.clipAngle(90);
+        d3.select("svg").insert("path", "path.sun-meridian")
+            .datum(meridian)
+            .attr("class", "user-meridian")
+            .attr("d", path);
     }
 
     function updateTime() {
@@ -213,26 +205,30 @@
         // For details, see https://ssd-api.jpl.nasa.gov/doc/horizons.html
 
         const date = new Date();
+        const system = Object.assign({}, userSelectedSystem);  // fix the system to use for consistency
+
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
-
-        secondOfDay = getSecondOfDay(date);  // this global variable is also used in function to update sun line
+        const secondOfDay = getSecondOfDay(system, date);
 
         document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${secondOfDay.p(5)}`;
 
-        const week = Math.trunc(dayOfYear/opt.daysInWeek);
-        const time = getTimeFromSeconds(secondOfDay, dayOfYear%opt.daysInWeek);
-        document.getElementById('timeColonized').innerHTML = `${time.hour}:${time.minute.p(2)}:${time.second.p(2)} of ${opt.daysInWeek}-day week ${week} of year ${year}`;
+        const week = Math.trunc(dayOfYear/system.daysInWeek);
+        const time = getTimeFromSeconds(system, secondOfDay, dayOfYear);
+        document.getElementById('timeColonized').innerHTML = `${time.hour}:${time.minute.p(2)}:${time.second.p(2)} of ${system.daysInWeek}-day week ${week} of year ${year}`;
 
-        if (longitude === undefined) { return; }
+        const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
+        updateSunMeridian(sunLongitude);
+
+        if (userLongitude === undefined) { return; }
 
         // Longitude below is measured in seconds, as an integer ranging from 0 up to number of seconds in a day.
         // In decimal system, Greenwich meridian is at 50000 and Sydney is at 8000 seconds.
-        const longitudeInSeconds = Math.trunc(secondsInDay()*(longitude+180)/360);
-        const secondOfDayAtLocalNoon = secondsInDay()-longitudeInSeconds;
-        const timeAtLocalNoon = getTimeFromSeconds(secondOfDayAtLocalNoon);
-        const [secondsToLocalNoon, period] = getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon);
-        const localTime = getTimeFromSeconds(secondsToLocalNoon);
+        const userLongitudeInSeconds = Math.trunc(system.secondsInDay*(userLongitude+180)/360);
+        const secondOfDayAtLocalNoon = system.secondsInDay-userLongitudeInSeconds;
+        const timeAtLocalNoon = getTimeFromSeconds(system, secondOfDayAtLocalNoon);
+        const [secondsToLocalNoon, period] = getSecondsToLocalNoon(system, secondOfDay, secondOfDayAtLocalNoon);
+        const localTime = getTimeFromSeconds(system, secondsToLocalNoon);
         document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)} ${period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
     }
 
@@ -248,26 +244,28 @@
         return -1+m*31-(m>1?(1054267675>>m*3-6&7)-(y&3||!(y%25)&&y&15?0:1):0)+d;
     }
 
-    function getSecondOfDay(date) {
+    function getSecondOfDay(system, date) {
         const ms = date.getUTCMilliseconds();
         const s = date.getUTCSeconds();
         const m = date.getUTCMinutes();
         const h = date.getUTCHours();
-        return Math.trunc((ms+(s+(m+h*60)*60)*1000)/traditionalMillisecondsInSecond());
+        const traditionalMillisecondsInSecond = 24*60*60*1000/system.secondsInDay;  // 1000 if traditional system is used or 864 if decimal system is used
+        secondOfDay = Math.trunc((ms+(s+(m+h*60)*60)*1000)/traditionalMillisecondsInSecond);
+        return secondOfDay;
     }
 
-    function getTimeFromSeconds(seconds, dayOfWeek=0) {
-        const secondsInHour = opt.secondsInMinute*opt.minutesInHour;
+    function getTimeFromSeconds(system, seconds, days=0) {
+        const dayOfWeek = days%system.daysInWeek;
         return {
-            hour: dayOfWeek*opt.hoursInDay+Math.trunc(seconds/secondsInHour),
-            minute: Math.trunc((seconds%secondsInHour)/opt.secondsInMinute),
-            second: seconds%opt.secondsInMinute
+            hour: dayOfWeek*system.hoursInDay+Math.trunc(seconds/system.secondsInHour),
+            minute: Math.trunc((seconds%system.secondsInHour)/system.secondsInMinute),
+            second: seconds%system.secondsInMinute
         }
     }
 
-    function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
+    function getSecondsToLocalNoon(system, secondOfDay, secondOfDayAtLocalNoon) {
         const i = secondOfDay-secondOfDayAtLocalNoon;
-        const n = secondsInDay();
+        const n = system.secondsInDay;
         const secondsToLocalNoon = Math.abs(i) < n/2 ? Math.abs(i) : n-Math.abs(i);
         const period = (-n/2 <= i && i < 0) || n/2 <= i ? "till noon" : "since noon";
         return [secondsToLocalNoon, period];

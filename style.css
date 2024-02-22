@@ -47,39 +47,39 @@ path.country-back {
     fill-opacity: 0.5;
 }
 
-path.hours {
+path.hour-meridian {
     fill: none;
     stroke-width: 1.5   ;
     stroke: #827669;
 }
 
-path.hours-back {
+path.hour-meridian-back {
     fill: none;
     stroke-width: 1.5;
     stroke: #c2bbb4;
 }
 
-path.sun {
+path.sun-meridian {
     fill: none;
     stroke-width: 8;
     stroke: #d87d1c;
     stroke-linecap: round;
 }
 
-path.sun-back {
+path.sun-meridian-back {
     fill: none;
     stroke-width: 8;
     stroke: #f0cea7;
     stroke-linecap: round;
 }
 
-path.local-noon {
+path.user-meridian {
     fill: none;
     stroke-width: 1.5;
     stroke: #d87d1c;
 }
 
-path.local-noon-back {
+path.user-meridian-back {
     fill: none;
     stroke-width: 1.5;
     stroke: #f0cea7;
