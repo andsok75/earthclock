@@ -184,7 +184,7 @@
                 .attr("class", "local-noon-back")
                 .attr("d", path);
             projection.clipAngle(90);
-            d3.select("svg").insert("path")
+            d3.select("svg").insert("path", "path.sun")
                 .datum(sunLine)
                 .attr("class", "local-noon")
                 .attr("d", path);
@@ -283,7 +283,7 @@
     <div id="timeColonized"></div>
     <div id="localTimeColonized"></div>
     <svg id="globe"></svg>
-    <select name="system" id="select-system" onchange="updateSystem();">
+    <select name="system" id="select-system" autocomplete="off" onchange="updateSystem();">
       <option value="decimal" selected>Decimal</option>
       <option value="traditional">Traditional</option>
     </select>
