@@ -21,7 +21,7 @@
         minutesInHour: 60,
         secondsInMinute: 60
     }
-    const opt = decimalOpt;
+    opt = decimalOpt;
     function secondsInDay() { return opt.hoursInDay*opt.minutesInHour*opt.secondsInMinute; }
     function traditionalMillisecondsInSecond() { return 24*60*60*1000/secondsInDay(); }  // 1000 if traditional system is used or 864 if decimal system is used
 
@@ -37,15 +37,16 @@
         .rotate(rotation(0));
     const path = d3.geoPath().projection(projection);
     const sunLine = d3.geoGraticule().step([360, 0]);
-    const hourLines = d3.geoGraticule().step([360/opt.hoursInDay, 90]).extent([[-180, -89.6], [180, 89.6]]);
-    const hours = [...Array(opt.hoursInDay).keys()];
+    function hourLines() { return d3.geoGraticule().step([360/opt.hoursInDay, 90]).extent([[-180, -89.6], [180, 89.6]]); }
+    function hours() { return [...Array(opt.hoursInDay).keys()]; }
     function hourText(i) { return i; }
 
     window.onload = async function() {
         const text = await fetchgzip("countries.geojson.gz");
         console.log("parsing countries geojson");
         const countries = JSON.parse(text);
-        createGlobe(countries);
+        addCountries(countries);
+        addHourLines();
         console.log("running timers");
         setInterval(updateTime, traditionalMillisecondsInSecond()/10);
         setInterval(updateSun, traditionalMillisecondsInSecond());
@@ -59,6 +60,22 @@
         }
     };
 
+    function updateSystem() {
+        const system = document.getElementById("select-system").value;
+        secondOfDay = undefined;
+        switch(system) {
+            case "decimal":
+                opt = decimalOpt;
+                break;
+            case "traditional":
+                opt = traditionalOpt;
+                break;
+            default:
+                throw Error(`unimpelemted system ${system}`);
+        }
+        addHourLines();
+    }
+
     async function fetchgzip(url) {
         console.log(`fetching ${url}`);
         const response = await fetch(url);
@@ -69,14 +86,14 @@
         return await blob.text();
     }
 
-    function createGlobe(countries) {
-        console.log("creating globe");
+    function addCountries(countries) {
         d3.select("svg")
             .attr("viewBox", `0 0 ${svgViewBoxSize} ${svgViewBoxSize}`)
             .attr("preserveAspectRatio", "xMidYMid meet")
             .attr("overflow", "visible");
 
         console.log("creating back countries");
+        projection.rotate(rotation(0));
         projection.clipAngle(180);
         d3.select("svg").selectAll(".country-back").data(countries.features)
             .enter()
@@ -90,25 +107,33 @@
             .append("path")
             .attr("class", "country")
             .attr("d", path);
+    }
 
+    function addHourLines() {
         console.log("decorating globe");
+
+        d3.selectAll(".hours").remove();
+        d3.selectAll(".hours-back").remove();
+        d3.selectAll(".hours-label").remove();
+
+        projection.rotate(rotation(0));
         projection.clipAngle(180);
         d3.select("svg").insert("path", "path.country")
-            .datum(hourLines)
+            .datum(hourLines())
             .attr("class", "hours-back")
             .attr("d", path);
         projection.clipAngle(90);
-        d3.select("svg").insert("path")
-            .datum(hourLines)
+        d3.select("svg").insert("path", "path.sun")
+            .datum(hourLines())
             .attr("class", "hours")
             .attr("d", path);
 
         d3.select("svg").selectAll(".text")
-            .data(hours)
+            .data(hours())
             .enter()
             .append("text")
-            .text(hourText)
-            .attr("class", "label")
+            .text(function(i) { return i; })
+            .attr("class", "hours-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:200%")
             .attr("dy", "1.25%")
             .attr("transform", function(i) {
@@ -258,5 +283,9 @@
     <div id="timeColonized"></div>
     <div id="localTimeColonized"></div>
     <svg id="globe"></svg>
-  </body>
+    <select name="system" id="select-system" onchange="updateSystem();">
+      <option value="decimal" selected>Decimal</option>
+      <option value="traditional">Traditional</option>
+    </select>
+</body>
 </html>
