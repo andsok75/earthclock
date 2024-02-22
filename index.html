@@ -8,6 +8,8 @@
   <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     const svgViewBoxSize = 1000;
+    const base = 24;
+    const secondsPerDay = 86400;
 
     let currentSunPathInitialized = false;
     let localNoonPathInitialized = false;
@@ -21,7 +23,6 @@
         .rotate(rotation(0));
     const path = d3.geoPath().projection(projection);
     const sunLine = d3.geoGraticule().step([360, 0]);
-    const base = 10;
     const hourLines = d3.geoGraticule().step([360/base, 90]).extent([[-180, -89.6], [180, 89.6]]);
     const hours = [...Array(base).keys()];
     function hourText(i) { return i; }
@@ -107,7 +108,7 @@
 
     function updateSun() {
         if (secondOfDay === undefined) { return; }
-        projection.rotate(rotation(180*(1-secondOfDay/50000)));
+        projection.rotate(rotation(180*(1-secondOfDay/(secondsPerDay/2))));
 
         if (!currentSunPathInitialized) {
             projection.clipAngle(180);
@@ -177,31 +178,51 @@
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
 
-        secondOfDay = getDecimalSecondOfDay(date);
+        decimalSecondOfDay = getDecimalSecondOfDay(date);
+        secondOfDay = getSecondOfDay(date);
 
-        document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${secondOfDay.p(5)}`;
+        document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${decimalSecondOfDay.p(5)}`;
 
         const tenDayTime = {
             year: year,
             week: Math.trunc(dayOfYear/10),
-            ...getTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
+            ...getDecimalTimeFromDecimalSeconds(secondOfDay, dayOfYear%10)
         };
 
-        document.getElementById('timeColonized').innerHTML = `${tenDayTime.hour.p(2)}:${tenDayTime.minute.p(2)}:${tenDayTime.second.p(2)} of week ${tenDayTime.week.p(2)} of year ${tenDayTime.year}`;
+        //document.getElementById('timeColonized').innerHTML = `${tenDayTime.hour.p(2)}:${tenDayTime.minute.p(2)}:${tenDayTime.second.p(2)} of ten-day week ${tenDayTime.week.p(2)} of year ${tenDayTime.year}`;
+
+        const sevenDayTime = {
+            year: year,
+            week: Math.trunc(dayOfYear/7),
+            ...getTimeFromSeconds(secondOfDay, dayOfYear%7)
+        };
+
+        document.getElementById('timeColonized').innerHTML = `${sevenDayTime.hour.p(3)}:${sevenDayTime.minute.p(2)}:${sevenDayTime.second.p(2)} of week ${sevenDayTime.week.p(2)} of year ${sevenDayTime.year}`;
+        ///document.getElementById('timeColonized').innerHTML = `${date.getUTCHours().p(2)}:${date.getUTCMinutes().p(2)}:${date.getUTCSeconds().p(2)} of day ${date.getUTCDate().p(2)} of month ${date.getUTCMonth().p(2)} of year ${date.getUTCFullYear()}`;
 
         if (longitude === undefined) { return; }
 
         // Longitude below is measured in decimal seconds, as an integer ranging from 0 up to 100000.
         // Greenwich meridian is at 50000 and Sydney is at 8000 decimal seconds.
-        const longitudeInSeconds = Math.trunc(100000*(longitude+180)/360);
-        const secondOfDayAtLocalNoon = 100000-longitudeInSeconds;
-        const timeAtLocalNoon = getTimeFromDecimalSeconds(secondOfDayAtLocalNoon);
-        const [secondsToLocalNoon, period] = getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon);
+        const longitudeInDecimalSeconds = Math.trunc(100000*(longitude+180)/360);
+        const decimalSecondOfDayAtLocalNoon = 100000-longitudeInDecimalSeconds;
+        const decimalTimeAtLocalNoon = getDecimalTimeFromDecimalSeconds(decimalSecondOfDayAtLocalNoon);
+        const [decimalSecondsToLocalNoon, period] = getDecimalSecondsToLocalNoon(decimalSecondOfDay, decimalSecondOfDayAtLocalNoon);
         const localTime = {
-            ...getTimeFromDecimalSeconds(secondsToLocalNoon),
+            ...getDecimalTimeFromDecimalSeconds(decimalSecondsToLocalNoon),
             period: period
         };
-        document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)} ${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
+        //document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)} ${localTime.period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
+
+        longitudeInSeconds = Math.trunc(86400*(longitude+180)/360);
+        secondOfDayAtLocalNoon = 86400-longitudeInSeconds;
+        timeAtLocalNoon = getTimeFromSeconds(secondOfDayAtLocalNoon);
+        const [secondsToLocalNoon, period1] = getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon);
+        const localTime1 = {
+            ...getTimeFromSeconds(secondsToLocalNoon),
+            period: period1
+        };
+        document.getElementById('localTimeColonized').innerHTML = `${localTime1.hour.p(2)}:${localTime1.minute.p(2)}:${localTime1.second.p(2)} ${localTime1.period} at ${timeAtLocalNoon.hour.p(2)}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
     }
 
     function getYear(date) {
@@ -225,23 +246,46 @@
         return Math.trunc((ms+(s+(m+h*60)*60)*1000)/864);
     }
 
-    function getTimeFromDecimalSeconds(seconds, dayOfWeek=0) {
+    function getSecondOfDay(date) {
+        const s = date.getUTCSeconds();
+        const m = date.getUTCMinutes();
+        const h = date.getUTCHours();
+        return s+(m+h*60)*60;
+    }
+
+    function getDecimalTimeFromDecimalSeconds(decimalSeconds, dayOfWeek=0) {
         // There are 100 decimal seconds in a decimal minute, 100 decimal minutes in a decimal hour, and
         // 10 decimal hours in a day or 100 decimal hours in a ten-day week.
         // Thus there are one million decimal seconds in a ten-day week.
         return {
-            hour: dayOfWeek*10+Math.trunc(seconds/10000),
-            minute: Math.trunc((seconds%10000)/100),
-            second: seconds%100
+            hour: dayOfWeek*10+Math.trunc(decimalSeconds/10000),
+            minute: Math.trunc((decimalSeconds%10000)/100),
+            second: decimalSeconds%100
         }
     }
 
-    function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
+    function getTimeFromSeconds(seconds, dayOfWeek=0) {
+        return {
+            hour: dayOfWeek*24+Math.trunc(seconds/3600),
+            minute: Math.trunc((seconds%3600)/60),
+            second: seconds%60
+        }
+    }
+
+    function getDecimalSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
         const s = secondOfDay-secondOfDayAtLocalNoon;
         const secondsToLocalNoon = -50000 < s && s < 50000 ? Math.abs(s) : 100000-Math.abs(s);
         const period = (-50000 <= s && s < 0) || 50000 <= s ? "till noon" : "since noon";
         return [secondsToLocalNoon, period];
     }
+
+    function getSecondsToLocalNoon(secondOfDay, secondOfDayAtLocalNoon) {
+        const s = secondOfDay-secondOfDayAtLocalNoon;
+        const secondsToLocalNoon = -86400/2 < s && s < 86400/2 ? Math.abs(s) : 86400-Math.abs(s);
+        const period = (-86400/2 <= s && s < 0) || 86400/2 <= s ? "till noon" : "since noon";
+        return [secondsToLocalNoon, period];
+    }
+
 
     Number.prototype.p = function(length) {
         return this.toString().padStart(length, '0')
