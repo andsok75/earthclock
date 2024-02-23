@@ -7,68 +7,69 @@
   <title></title>
   <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
   <script type="text/javascript">
-    const traditionalSystem = {
-        name: "traditional",
-        base: 10,
-        daysInWeek: 7,
-        hoursInDay: 24,
-        minutesInHour: 60,
-        secondsInMinute: 60,
-        secondsInHour: 60*60,
-        secondsInDay: 24*60*60
-    };
-    const octalSystem = {
-        name: "octal",
-        base: 8,
-        daysInWeek: 8,
-        hoursInDay: 8,
-        minutesInHour: 64,
-        secondsInMinute: 64,
-        secondsInHour: 64*64,
-        secondsInDay: 8*64*64
-    };
-    const decimalSystem = {
-        name: "decimal",
-        base: 10,
-        daysInWeek: 10,
-        hoursInDay: 10,
-        minutesInHour: 100,
-        secondsInMinute: 100,
-        secondsInHour: 100*100,
-        secondsInDay: 10*100*100
-    };
-    const base12System = {
-        name: "base12",
-        base: 12,
-        daysInWeek: 12,
-        hoursInDay: 12,
-        minutesInHour: 144,
-        secondsInMinute: 144,
-        secondsInHour: 144*144,
-        secondsInDay: 12*144*144
-    };
-    const base14System = {
-        name: "base14",
-        base: 14,
-        daysInWeek: 14,
-        hoursInDay: 14,
-        minutesInHour: 196,
-        secondsInMinute: 196,
-        secondsInHour: 196*196,
-        secondsInDay: 14*196*196
-    };
-    const hexSystem = {
-        name: "hex",
-        base: 16,
-        daysInWeek: 16,
-        hoursInDay: 16,
-        minutesInHour: 256,
-        secondsInMinute: 256,
-        secondsInHour: 256*256,
-        secondsInDay: 16*256*256
-    };
-    const definedSystems = [traditionalSystem, octalSystem, decimalSystem, base12System, base14System, hexSystem];
-    const defaultSystem = decimalSystem;
+    const systems = [
+        {
+            name: "traditional",
+            base: 10,
+            daysInWeek: 7,
+            hoursInDay: 24,
+            minutesInHour: 60,
+            secondsInMinute: 60,
+            secondsInHour: 60*60,
+            secondsInDay: 24*60*60
+        },
+        {
+            name: "octal",
+            base: 8,
+            daysInWeek: 8,
+            hoursInDay: 8,
+            minutesInHour: 64,
+            secondsInMinute: 64,
+            secondsInHour: 64*64,
+            secondsInDay: 8*64*64
+        },
+        {
+            name: "decimal",
+            base: 10,
+            daysInWeek: 10,
+            hoursInDay: 10,
+            minutesInHour: 100,
+            secondsInMinute: 100,
+            secondsInHour: 100*100,
+            secondsInDay: 10*100*100
+        },
+        {
+            name: "base12",
+            base: 12,
+            daysInWeek: 12,
+            hoursInDay: 12,
+            minutesInHour: 144,
+            secondsInMinute: 144,
+            secondsInHour: 144*144,
+            secondsInDay: 12*144*144
+        },
+        {
+            name: "base14",
+            base: 14,
+            daysInWeek: 14,
+            hoursInDay: 14,
+            minutesInHour: 196,
+            secondsInMinute: 196,
+            secondsInHour: 196*196,
+            secondsInDay: 14*196*196
+        },
+        {
+            name: "hex",
+            base: 16,
+            daysInWeek: 16,
+            hoursInDay: 16,
+            minutesInHour: 256,
+            secondsInMinute: 256,
+            secondsInHour: 256*256,
+            secondsInDay: 16*256*256
+        }
+    ]
+    const defaultSystem = systems.find(system => system.name === "decimal");
     const svgViewBoxSize = 1000;
     const projection = d3.geoOrthographic()
         .scale(svgViewBoxSize/2)
@@ -110,7 +111,7 @@
         select.setAttribute("autocomplete", "off");
         select.setAttribute("onchange", "updateSystem();");
         document.body.appendChild(select);
-        for (const system of definedSystems) {
+        for (const system of systems) {
             const option = document.createElement("option");
             option.value = system.name;
             option.text = system.name;
@@ -123,7 +124,7 @@
 
     function updateSystem() {
         const userSelectedSystemName = document.getElementById("select-system").value;
-        userSelectedSystem = definedSystems.find(system => system.name === userSelectedSystemName);
+        userSelectedSystem = systems.find(system => system.name === userSelectedSystemName);
         updateHourMeridians(userSelectedSystem);
     }
 
@@ -260,16 +261,18 @@
 
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
-        const decimalSecondOfDay = getSecondOfDay(decimalSystem, date);
-        document.getElementById('time').innerHTML = `${year.p(4)}/${dayOfYear.p(3)}.${decimalSecondOfDay.p(5)}`;
+
+        const defaultSecondOfDay = getSecondOfDay(defaultSystem, date);
+        document.getElementById('time').innerHTML = `${year.p(4, defaultSystem.base)}/${dayOfYear.p(3, defaultSystem.base)}.${defaultSecondOfDay.p(5, defaultSystem.base)}`;
 
         const system = Object.assign({}, userSelectedSystem || defaultSystem);  // fix the system for consistency
         const base = system.base;
         const secondOfDay = getSecondOfDay(system, date);
 
         const week = Math.trunc(dayOfYear/system.daysInWeek);
-        const time = getTimeFromSeconds(system, secondOfDay, dayOfYear);
-        document.getElementById('timeColonized').innerHTML = `${time.hour.s(base)}:${time.minute.p(2, base)}:${time.second.p(2, base)} of week ${week.s(base)} of year ${year.s(base)}`;
+        const dayOfWeek = dayOfYear%system.daysInWeek;
+        const time = getTimeFromSeconds(system, secondOfDay, dayOfWeek);
+        document.getElementById('timeColonized').innerHTML = `${time.hour.s(base)}:${time.minute.p(2, base)}:${time.second.p(2, base)} of week ${week.s(base)} day ${dayOfWeek.s(base)}`;
 
         const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
         if( previousSunLongitude === undefined || Math.abs(sunLongitude-previousSunLongitude) > 0.036) {
@@ -315,8 +318,7 @@
         return Math.trunc((ms+(s+(m+h*60)*60)*1000)/traditionalMillisecondsInSecond);
     }
 
-    function getTimeFromSeconds(system, seconds, days=0) {
-        const dayOfWeek = days%system.daysInWeek;
+    function getTimeFromSeconds(system, seconds, dayOfWeek=0) {
         return {
             hour: dayOfWeek*system.hoursInDay+Math.trunc(seconds/system.secondsInHour),
             minute: Math.trunc((seconds%system.secondsInHour)/system.secondsInMinute),
