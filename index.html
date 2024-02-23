@@ -7,8 +7,29 @@
   <title></title>
   <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
   <script type="text/javascript">
+    const traditionalSystem = {
+        name: "traditional",
+        base: 10,
+        daysInWeek: 7,
+        hoursInDay: 24,
+        minutesInHour: 60,
+        secondsInMinute: 60,
+        secondsInHour: 60*60,
+        secondsInDay: 24*60*60
+    };
+    const octalSystem = {
+        name: "octal",
+        base: 8,
+        daysInWeek: 8,
+        hoursInDay: 8,
+        minutesInHour: 64,
+        secondsInMinute: 64,
+        secondsInHour: 64*64,
+        secondsInDay: 8*64*64
+    };
     const decimalSystem = {
         name: "decimal",
+        base: 10,
         daysInWeek: 10,
         hoursInDay: 10,
         minutesInHour: 100,
@@ -16,16 +37,17 @@
         secondsInHour: 100*100,
         secondsInDay: 10*100*100
     };
-    const traditionalSystem = {
-        name: "traditional",
-        daysInWeek: 7,
-        hoursInDay: 24,
-        minutesInHour: 60,
-        secondsInMinute: 60,
-        secondsInHour: 60*60,
-        secondsInDay: 24*60*60
-    }
-    const definedSystems = [decimalSystem, traditionalSystem];
+    const hexSystem = {
+        name: "hex",
+        base: 16,
+        daysInWeek: 16,
+        hoursInDay: 16,
+        minutesInHour: 256,
+        secondsInMinute: 256,
+        secondsInHour: 256*256,
+        secondsInDay: 16*256*256
+    };
+    const definedSystems = [traditionalSystem, octalSystem, decimalSystem, hexSystem];
     const defaultSystem = decimalSystem;
     const svgViewBoxSize = 1000;
     const projection = d3.geoOrthographic()
@@ -80,17 +102,8 @@
     }
 
     function updateSystem() {
-        const systemName = document.getElementById("select-system").value;
-        switch(systemName) {
-            case decimalSystem.name:
-                userSelectedSystem = decimalSystem;
-                break;
-            case traditionalSystem.name:
-                userSelectedSystem = traditionalSystem;
-                break;
-            default:
-                throw Error(`unimpelemted system ${systemName}`);
-        }
+        const userSelectedSystemName = document.getElementById("select-system").value;
+        userSelectedSystem = definedSystems.find(system => system.name === userSelectedSystemName);
         updateHourMeridians(userSelectedSystem);
     }
 
@@ -152,7 +165,7 @@
             .data([...Array(system.hoursInDay).keys()])
             .enter()
             .append("text")
-            .text(function(i) { return i; })
+            .text(function(i) { return i.s(system.base); })
             .attr("class", "hour-meridian-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:200%")
             .attr("dy", "1.25%")
@@ -224,17 +237,19 @@
         // For details, see https://ssd-api.jpl.nasa.gov/doc/horizons.html
 
         const date = new Date();
-        const system = Object.assign({}, userSelectedSystem);  // fix the system to use for consistency
 
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
-        const secondOfDay = getSecondOfDay(system, date);
+        const decimalSecondOfDay = getSecondOfDay(decimalSystem, date);
+        document.getElementById('time').innerHTML = `${year.p(4)}/${dayOfYear.p(3)}.${decimalSecondOfDay.p(5)}`;
 
-        document.getElementById('time').innerHTML = `${year}/${dayOfYear.p(3)}.${secondOfDay.p(5)}`;
+        const system = Object.assign({}, userSelectedSystem);  // fix the system for consistency
+        const base = system.base;
+        const secondOfDay = getSecondOfDay(system, date);
 
         const week = Math.trunc(dayOfYear/system.daysInWeek);
         const time = getTimeFromSeconds(system, secondOfDay, dayOfYear);
-        document.getElementById('timeColonized').innerHTML = `${time.hour}:${time.minute.p(2)}:${time.second.p(2)} of ${system.daysInWeek}-day week ${week} of year ${year}`;
+        document.getElementById('timeColonized').innerHTML = `${time.hour.s(base)}:${time.minute.p(2, base)}:${time.second.p(2, base)} of week ${week.s(base)} of year ${year.s(base)}`;
 
         const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
         updateSunMeridian(sunLongitude);
@@ -251,8 +266,11 @@
         const timeAtUserNoon = getTimeFromSeconds(system, secondOfDayAtUserNoon);
         const [secondsToUserNoon, period] = getSecondsToUserNoon(system, secondOfDay, secondOfDayAtUserNoon);
         const userTime = getTimeFromSeconds(system, secondsToUserNoon);
-        document.getElementById('userTimeColonized').innerHTML = `${userTime.hour}:${userTime.minute.p(2)}:${userTime.second.p(2)} ${period} at ${timeAtUserNoon.hour}:${timeAtUserNoon.minute.p(2)}:${timeAtUserNoon.second.p(2)}`;
+        document.getElementById('userTimeColonized').innerHTML = `${userTime.hour.s(base)}:${userTime.minute.p(2, base)}:${userTime.second.p(2, base)} ${period} at ${timeAtUserNoon.hour.s(base)}:${timeAtUserNoon.minute.p(2, base)}:${timeAtUserNoon.second.p(2, base)}`;
     }
+
+    Number.prototype.s = function(base=10) { return this.toString(base); }
+    Number.prototype.p = function(length, base=10) { return this.toString(base).padStart(length, '0'); }
 
     function getYear(date) {
         return date.getUTCFullYear();
@@ -290,10 +308,6 @@
         const secondsToUserNoon = Math.abs(i) < n/2 ? Math.abs(i) : n-Math.abs(i);
         const period = (-n/2 <= i && i < 0) || n/2 <= i ? "till noon" : "since noon";
         return [secondsToUserNoon, period];
-    }
-
-    Number.prototype.p = function(length) {
-        return this.toString().padStart(length, '0')
     }
   </script>
   </head>
