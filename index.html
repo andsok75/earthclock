@@ -69,7 +69,7 @@
             secondsInDay: 16*256*256
         }
     ]
-    const defaultSystem = systems.find(system => system.name === "decimal");
+    const decimalSystem = systems.find(system => system.name === "decimal");
     const svgViewBoxSize = 1000;
     const projection = d3.geoOrthographic()
         .scale(svgViewBoxSize/2)
@@ -89,7 +89,7 @@
         console.log("parsing countries geojson");
         const countries = JSON.parse(text);
         addCountries(countries);
-        updateHourMeridians(defaultSystem);
+        updateHourMeridians(decimalSystem);
         console.log("setting up time updater");
         setInterval(updateTime, 10);
         createSystemSelection();
@@ -115,7 +115,7 @@
             const option = document.createElement("option");
             option.value = system.name;
             option.text = system.name;
-            if (system.name === defaultSystem.name) {
+            if (system.name === decimalSystem.name) {
                 option.setAttribute("selected", "selected");
             }
             select.add(option);
@@ -262,10 +262,10 @@
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
 
-        const defaultSecondOfDay = getSecondOfDay(defaultSystem, date);
-        document.getElementById('time').innerHTML = `${year.p(4, defaultSystem.base)}/${dayOfYear.p(3, defaultSystem.base)}.${defaultSecondOfDay.p(5, defaultSystem.base)}`;
+        const defaultSecondOfDay = getSecondOfDay(decimalSystem, date);
+        document.getElementById('time').innerHTML = `${year.p(4, decimalSystem.base)}/${dayOfYear.p(3, decimalSystem.base)}.${defaultSecondOfDay.p(5, decimalSystem.base)}`;
 
-        const system = Object.assign({}, userSelectedSystem || defaultSystem);  // fix the system for consistency
+        const system = Object.assign({}, userSelectedSystem || decimalSystem);  // fix the system for consistency
         const base = system.base;
         const secondOfDay = getSecondOfDay(system, date);
 
