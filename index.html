@@ -25,6 +25,7 @@
         secondsInHour: 60*60,
         secondsInDay: 24*60*60
     }
+    const definedSystems = [decimalSystem, traditionalSystem];
     const defaultSystem = decimalSystem;
     const svgViewBoxSize = 1000;
     const projection = d3.geoOrthographic()
@@ -46,8 +47,9 @@
         const countries = JSON.parse(text);
         addCountries(countries);
         updateHourMeridians(defaultSystem);
-        console.log("running time updater");
+        console.log("setting up time updater");
         setInterval(updateTime, 100);
+        createSystemSelection();
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 userLongitude = position.coords.longitude;
@@ -58,6 +60,24 @@
             });
         }
     };
+
+    function createSystemSelection() {
+        console.log("creating system selection");
+        const select = document.createElement("select");
+        select.id = "select-system";
+        select.setAttribute("autocomplete", "off");
+        select.setAttribute("onchange", "updateSystem();");
+        document.body.appendChild(select);
+        for (const system of definedSystems) {
+            const option = document.createElement("option");
+            option.value = system.name;
+            option.text = system.name;
+            if (system.name === defaultSystem.name) {
+                option.setAttribute("selected", "selected");
+            }
+            select.add(option);
+        }
+    }
 
     function updateSystem() {
         const systemName = document.getElementById("select-system").value;
@@ -147,7 +167,6 @@
 
     function updateSunMeridian(sunLongitude) {
         projection.rotate(rotation(sunLongitude));
-
         if (!sunMeridianInitialized) {
             projection.clipAngle(180);
             d3.select("svg").insert("path", "path.country")
@@ -220,7 +239,10 @@
         const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
         updateSunMeridian(sunLongitude);
 
-        if (userLongitude === undefined) { return; }
+        if (userLongitude === undefined) {
+            document.getElementById('userTimeColonized').innerHTML = "&nbsp;";
+            return;
+        }
 
         // Longitude below is measured in seconds, as an integer ranging from 0 up to number of seconds in a day.
         // In decimal system, Greenwich meridian is at 50000 and Sydney is at 8000 seconds.
@@ -280,9 +302,5 @@
     <div id="timeColonized"></div>
     <div id="userTimeColonized"></div>
     <svg id="globe"></svg>
-    <select name="system" id="select-system" autocomplete="off" onchange="updateSystem();">
-      <option value="decimal" selected>Decimal</option>
-      <option value="traditional">Traditional</option>
-    </select>
 </body>
 </html>
