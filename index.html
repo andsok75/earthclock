@@ -88,27 +88,25 @@
     let previousSunLongitude = undefined;
 
     window.onload = async function() {
-        const text = await fetchgzip("countries.geojson.gz");
-        console.log("parsing countries geojson");
-        const countries = JSON.parse(text);
+        console.time("onload");
+        const countries = await fetchCompressedJson("countries.geojson.gz", "gzip");
         addCountries(countries);
         updateHourMeridians(decimalSystem);
-        console.log("setting up time updater");
         setInterval(updateTime, 10);
         createSystemSelection();
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 userLongitude = position.coords.longitude;
                 addUserMeridian(userLongitude);
-                console.log(`obtained user longitude ${userLongitude}`);
+                console.log(`user longitude ${userLongitude}`);
             }, function(error) {
                 console.log(error);
             });
         }
+        console.timeEnd("onload");
     };
 
     function createSystemSelection() {
-        console.log("creating system selection");
         const select = document.createElement("select");
         select.id = "select-system";
         select.setAttribute("autocomplete", "off");
@@ -131,14 +129,20 @@
         updateHourMeridians(userSelectedSystem);
     }
 
-    async function fetchgzip(url) {
-        console.log(`fetching ${url}`);
+    async function fetchCompressedJson(url, format) {
+        console.time("fetch");
         const response = await fetch(url);
         const compressedBlob = await response.blob();
-        console.log(`unzipping ${url}`);
-        const stream = compressedBlob.stream().pipeThrough(new DecompressionStream("gzip"));
+        console.timeEnd("fetch");
+        console.time("uncompress");
+        const stream = compressedBlob.stream().pipeThrough(new DecompressionStream(format));
         const blob = await new Response(stream).blob();
-        return await blob.text();
+        const text = await blob.text();
+        console.timeEnd("uncompress");
+        console.time("parse");
+        const obj = JSON.parse(text);
+        console.timeEnd("parse");
+        return obj;
     }
 
     function addCountries(countries) {
@@ -146,8 +150,7 @@
             .attr("viewBox", `0 0 ${svgViewBoxSize} ${svgViewBoxSize}`)
             .attr("preserveAspectRatio", "xMidYMid meet")
             .attr("overflow", "visible");
-
-        console.log("creating back countries");
+        console.time("svg countries back");
         projection.rotate(rotation());
         projection.clipAngle(180);
         d3.select("svg").selectAll(".country-back").data(countries.features)
@@ -155,18 +158,19 @@
             .append("path")
             .attr("class", "country-back")
             .attr("d", path);
-        console.log("creating front countries");
+        console.timeEnd("svg countries back");
+        console.time("svg countries front");
         projection.clipAngle(90);
         d3.select("svg").selectAll(".country").data(countries.features)
             .enter()
             .append("path")
             .attr("class", "country")
             .attr("d", path);
+        console.timeEnd("svg countries front");
     }
 
     function updateHourMeridians(system) {
-        console.log("updating hour meridians");
-
+        console.time("svg hour meridians");
         projection.rotate(rotation());
         meridians = d3.geoGraticule().step([360/system.hoursInDay, 90]).extent([[-180, -89.6], [180, 89.6]]);
 
@@ -200,6 +204,7 @@
                 p[1] += f*(p[1]-svgViewBoxSize/2);
                 return `translate(${p})`;
             });
+        console.timeEnd("svg hour meridians");
     }
 
     function updateSunMeridian(sunLongitude) {
