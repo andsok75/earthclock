@@ -9,6 +9,9 @@
   <script type="text/javascript">
     const systems = [
         {
+            // Besides inconsistent bases, another peculiarity about traditional system is that the week is not reset at the beginning of the year.
+            // The first and the last weeks of the year may be incomplete because some days of the week may be spilled over to the previous or next year.
+            // In the other systems, each year starts with week 0 and day 0, while the last week of the year is allowed to be incomplete.
             name: "traditional",
             base: 10,
             daysInWeek: 7,
@@ -244,7 +247,7 @@
     function updateTime() {
         // This function updates the time, that is UTC time expressed as years and days with decimal fractions.
         // The same time is also shown as decimal hours, minutes, and seconds in the current ten-day week.
-        // The time will be shown with traditional units instead if the user selects traditional system.
+        // The time will be shown with traditional or other units instead if the user selects another system.
         //
         // The time at user noon is the UTC time at the moment when the mean sun passes the user medirian.
         // The user time is the time till user noon in the morning or since user noon in the afternoon.
@@ -269,10 +272,12 @@
         const base = system.base;
         const secondOfDay = getSecondOfDay(system, date);
 
-        const week = Math.trunc(dayOfYear/system.daysInWeek);
-        const dayOfWeek = dayOfYear%system.daysInWeek;
+        const offset = system.name !== "traditional" ? 0 : new Date(year, 0).getUTCDay()-1;
+        const week = Math.trunc((dayOfYear+offset)/system.daysInWeek);
+        const dayOfWeek = (dayOfYear+offset)%system.daysInWeek;
         const time = getTimeFromSeconds(system, secondOfDay, dayOfWeek);
-        document.getElementById('timeColonized').innerHTML = `${time.hour.s(base)}:${time.minute.p(2, base)}:${time.second.p(2, base)} of week ${week.s(base)} day ${dayOfWeek.s(base)}`;
+        const dayName = system.name !== "traditional" ? `day ${dayOfWeek.s(base)}` : new Intl.DateTimeFormat("en-US", {"weekday": "long", "timeZone": "UTC"}).format(date);
+        document.getElementById('timeColonized').innerHTML = `${time.hour.s(base)}:${time.minute.p(2, base)}:${time.second.p(2, base)} of week ${week.s(base)} ${dayName}`;
 
         const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
         if( previousSunLongitude === undefined || Math.abs(sunLongitude-previousSunLongitude) > 0.01) {
