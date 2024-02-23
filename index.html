@@ -37,6 +37,26 @@
         secondsInHour: 100*100,
         secondsInDay: 10*100*100
     };
+    const base12System = {
+        name: "base12",
+        base: 12,
+        daysInWeek: 12,
+        hoursInDay: 12,
+        minutesInHour: 144,
+        secondsInMinute: 144,
+        secondsInHour: 144*144,
+        secondsInDay: 12*144*144
+    };
+    const base14System = {
+        name: "base14",
+        base: 14,
+        daysInWeek: 14,
+        hoursInDay: 14,
+        minutesInHour: 196,
+        secondsInMinute: 196,
+        secondsInHour: 196*196,
+        secondsInDay: 14*196*196
+    };
     const hexSystem = {
         name: "hex",
         base: 16,
@@ -47,7 +67,7 @@
         secondsInHour: 256*256,
         secondsInDay: 16*256*256
     };
-    const definedSystems = [traditionalSystem, octalSystem, decimalSystem, hexSystem];
+    const definedSystems = [traditionalSystem, octalSystem, decimalSystem, base12System, base14System, hexSystem];
     const defaultSystem = decimalSystem;
     const svgViewBoxSize = 1000;
     const projection = d3.geoOrthographic()
