@@ -59,9 +59,9 @@
 
     function rotation(roll=0, pitch=-90, yaw=0) { return [roll, pitch, yaw]; }
 
-    let userSelectedSystem = defaultSystem;
+    let userSelectedSystem = undefined;
     let userLongitude = undefined;
-    let sunMeridianInitialized = false;
+    let previousSunLongitude = undefined;
 
     window.onload = async function() {
         const text = await fetchgzip("countries.geojson.gz");
@@ -70,7 +70,7 @@
         addCountries(countries);
         updateHourMeridians(defaultSystem);
         console.log("setting up time updater");
-        setInterval(updateTime, 100);
+        setInterval(updateTime, 82);
         createSystemSelection();
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -180,7 +180,7 @@
 
     function updateSunMeridian(sunLongitude) {
         projection.rotate(rotation(sunLongitude));
-        if (!sunMeridianInitialized) {
+        if (previousSunLongitude === undefined) {
             projection.clipAngle(180);
             d3.select("svg").insert("path", "path.country")
                 .datum(meridian)
@@ -191,7 +191,6 @@
                 .datum(meridian)
                 .attr("class", "sun-meridian")
                 .attr("d", path);
-            sunMeridianInitialized = true;
         } else {
             projection.clipAngle(180);
             d3.select("svg").selectAll(".sun-meridian-back")
@@ -204,6 +203,7 @@
                 .attr("class", "sun-meridian")
                 .attr("d", path);
         }
+        previousSunLongitude = sunLongitude;
     }
 
     function addUserMeridian(userLongitude) {
@@ -243,7 +243,7 @@
         const decimalSecondOfDay = getSecondOfDay(decimalSystem, date);
         document.getElementById('time').innerHTML = `${year.p(4)}/${dayOfYear.p(3)}.${decimalSecondOfDay.p(5)}`;
 
-        const system = Object.assign({}, userSelectedSystem);  // fix the system for consistency
+        const system = Object.assign({}, userSelectedSystem || defaultSystem);  // fix the system for consistency
         const base = system.base;
         const secondOfDay = getSecondOfDay(system, date);
 
@@ -252,7 +252,9 @@
         document.getElementById('timeColonized').innerHTML = `${time.hour.s(base)}:${time.minute.p(2, base)}:${time.second.p(2, base)} of week ${week.s(base)} of year ${year.s(base)}`;
 
         const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
-        updateSunMeridian(sunLongitude);
+        if( previousSunLongitude === undefined || Math.abs(sunLongitude-previousSunLongitude) > 0.036) {
+            updateSunMeridian(sunLongitude);
+        }
 
         if (userLongitude === undefined) {
             document.getElementById('userTimeColonized').innerHTML = "&nbsp;";
