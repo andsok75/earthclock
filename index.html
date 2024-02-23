@@ -288,7 +288,7 @@
         const timeAtUserNoon = getTimeFromSeconds(system, secondOfDayAtUserNoon);
         const [secondsToUserNoon, period] = getSecondsToUserNoon(system, secondOfDay, secondOfDayAtUserNoon);
         const userTime = getTimeFromSeconds(system, secondsToUserNoon);
-        document.getElementById('userTimeColonized').innerHTML = `${userTime.hour.s(base)}:${userTime.minute.p(2, base)}:${userTime.second.p(2, base)} ${period} at ${timeAtUserNoon.hour.s(base)}:${timeAtUserNoon.minute.p(2, base)}:${timeAtUserNoon.second.p(2, base)}`;
+        document.getElementById('userTimeColonized').innerHTML = `${userTime.hour.s(base)}:${userTime.minute.p(2, base)} ${period} at ${timeAtUserNoon.hour.s(base)}:${timeAtUserNoon.minute.p(2, base)}`;
     }
 
     Number.prototype.s = function(base=10) { return this.toString(base); }
