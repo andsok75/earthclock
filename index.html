@@ -91,7 +91,7 @@
         addCountries(countries);
         updateHourMeridians(defaultSystem);
         console.log("setting up time updater");
-        setInterval(updateTime, 82);
+        setInterval(updateTime, 10);
         createSystemSelection();
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
