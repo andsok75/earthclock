@@ -191,10 +191,10 @@
     function updateTime() {
         // This function updates the time, that is UTC time expressed as years and days with decimal fractions.
         // The same time is also shown as decimal hours, minutes, and seconds in the current ten-day week.
-        // It can show traditional time too if options are set to traditional values.
+        // The time will be shown with traditional units instead if the user selects traditional system.
         //
-        // The time at local noon is the UTC time at the moment when the mean sun passes the local medirian.
-        // The local time is the time till local noon in the morning or since local noon in the evening.
+        // The time at user noon is the UTC time at the moment when the mean sun passes the user medirian.
+        // The user time is the time till user noon in the morning or since user noon in the afternoon.
         //
         // Note that the mean sun is usually different from the apparent sun, so apparent noon may be ahead or behind the mean noon by a few minutes.
         // For details, see https://en.wikipedia.org/wiki/Equation_of_time
@@ -225,11 +225,11 @@
         // Longitude below is measured in seconds, as an integer ranging from 0 up to number of seconds in a day.
         // In decimal system, Greenwich meridian is at 50000 and Sydney is at 8000 seconds.
         const userLongitudeInSeconds = Math.trunc(system.secondsInDay*(userLongitude+180)/360);
-        const secondOfDayAtLocalNoon = system.secondsInDay-userLongitudeInSeconds;
-        const timeAtLocalNoon = getTimeFromSeconds(system, secondOfDayAtLocalNoon);
-        const [secondsToLocalNoon, period] = getSecondsToLocalNoon(system, secondOfDay, secondOfDayAtLocalNoon);
-        const localTime = getTimeFromSeconds(system, secondsToLocalNoon);
-        document.getElementById('localTimeColonized').innerHTML = `${localTime.hour}:${localTime.minute.p(2)}:${localTime.second.p(2)} ${period} at ${timeAtLocalNoon.hour}:${timeAtLocalNoon.minute.p(2)}:${timeAtLocalNoon.second.p(2)}`;
+        const secondOfDayAtUserNoon = system.secondsInDay-userLongitudeInSeconds;
+        const timeAtUserNoon = getTimeFromSeconds(system, secondOfDayAtUserNoon);
+        const [secondsToUserNoon, period] = getSecondsToUserNoon(system, secondOfDay, secondOfDayAtUserNoon);
+        const userTime = getTimeFromSeconds(system, secondsToUserNoon);
+        document.getElementById('userTimeColonized').innerHTML = `${userTime.hour}:${userTime.minute.p(2)}:${userTime.second.p(2)} ${period} at ${timeAtUserNoon.hour}:${timeAtUserNoon.minute.p(2)}:${timeAtUserNoon.second.p(2)}`;
     }
 
     function getYear(date) {
@@ -250,8 +250,7 @@
         const m = date.getUTCMinutes();
         const h = date.getUTCHours();
         const traditionalMillisecondsInSecond = 24*60*60*1000/system.secondsInDay;  // 1000 if traditional system is used or 864 if decimal system is used
-        secondOfDay = Math.trunc((ms+(s+(m+h*60)*60)*1000)/traditionalMillisecondsInSecond);
-        return secondOfDay;
+        return Math.trunc((ms+(s+(m+h*60)*60)*1000)/traditionalMillisecondsInSecond);
     }
 
     function getTimeFromSeconds(system, seconds, days=0) {
@@ -263,12 +262,12 @@
         }
     }
 
-    function getSecondsToLocalNoon(system, secondOfDay, secondOfDayAtLocalNoon) {
-        const i = secondOfDay-secondOfDayAtLocalNoon;
+    function getSecondsToUserNoon(system, secondOfDay, secondOfDayAtUserNoon) {
+        const i = secondOfDay-secondOfDayAtUserNoon;
         const n = system.secondsInDay;
-        const secondsToLocalNoon = Math.abs(i) < n/2 ? Math.abs(i) : n-Math.abs(i);
+        const secondsToUserNoon = Math.abs(i) < n/2 ? Math.abs(i) : n-Math.abs(i);
         const period = (-n/2 <= i && i < 0) || n/2 <= i ? "till noon" : "since noon";
-        return [secondsToLocalNoon, period];
+        return [secondsToUserNoon, period];
     }
 
     Number.prototype.p = function(length) {
@@ -279,7 +278,7 @@
   <body>
     <div id="time"></div>
     <div id="timeColonized"></div>
-    <div id="localTimeColonized"></div>
+    <div id="userTimeColonized"></div>
     <svg id="globe"></svg>
     <select name="system" id="select-system" autocomplete="off" onchange="updateSystem();">
       <option value="decimal" selected>Decimal</option>
