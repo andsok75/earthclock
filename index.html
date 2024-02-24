@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="style.css">
   <title></title>
   <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
+  <script src="https://d3js.org/topojson.v3.min.js"></script>
   <script type="text/javascript">
     const systems = [
         {
@@ -89,7 +90,7 @@
 
     window.onload = async function() {
         console.time("onload");
-        const countries = await fetchCompressedJson("countries.geojson.gz", "gzip");
+        const countries = await fetchCompressedJson("countries-50m.json.gz", "gzip");
         addCountries(countries);
         updateHourMeridians(decimalSystem);
         setInterval(updateTime, 10);
@@ -150,10 +151,13 @@
             .attr("viewBox", `0 0 ${svgViewBoxSize} ${svgViewBoxSize}`)
             .attr("preserveAspectRatio", "xMidYMid meet")
             .attr("overflow", "visible");
+        console.time("features");
+        const features = topojson.feature(countries, countries.objects.countries).features;
+        console.timeEnd("features");
         console.time("countries back");
         projection.rotate(rotation());
         projection.clipAngle(180);
-        svg.selectAll(".country-back").data(countries.features)
+        svg.selectAll(".country-back").data(features)
             .enter()
             .insert("path")
             .attr("class", "country-back")
@@ -161,7 +165,7 @@
         console.timeEnd("countries back");
         console.time("countries front");
         projection.clipAngle(90);
-        svg.selectAll(".country").data(countries.features)
+        svg.selectAll(".country").data(features)
             .enter()
             .insert("path")
             .attr("class", "country")
