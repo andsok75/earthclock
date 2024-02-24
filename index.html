@@ -154,8 +154,8 @@
         console.time("features");
         const features = topojson.feature(countries, countries.objects.countries).features;
         console.timeEnd("features");
-        console.time("countries back");
         projection.rotate(rotation());
+        console.time("countries back");
         projection.clipAngle(180);
         svg.selectAll(".country-back").data(features)
             .enter()
@@ -171,12 +171,16 @@
             .attr("class", "country")
             .attr("d", path);
         console.timeEnd("countries front");
+        svg.insert("path")
+            .datum({type: "Sphere"})
+            .attr("class", "sphere-outline")
+            .attr("d", path);
     }
 
     function updateHourMeridians(system) {
         console.time("hour meridians");
         projection.rotate(rotation());
-        meridians = d3.geoGraticule().step([360/system.hoursInDay, 90]).extent([[-180, -89.6], [180, 89.6]]);
+        meridians = d3.geoGraticule().step([360/system.hoursInDay, 0]).extent([[-180, -89.6], [180, 89.6]]);
         svg = d3.select("svg");
 
         d3.selectAll(".hour-meridian").remove();

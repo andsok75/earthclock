@@ -33,6 +33,12 @@
     padding: 25px;
 }
 
+path.sphere-outline {
+    fill: none;
+    stroke-width: 0.25;
+    stroke: #827669;
+}
+
 path.country {
     stroke-width: 0.5;
     stroke: #5753a0;
@@ -49,7 +55,7 @@ path.country-back {
 
 path.hour-meridian {
     fill: none;
-    stroke-width: 1.5   ;
+    stroke-width: 1.5;
     stroke: #827669;
 }
 
