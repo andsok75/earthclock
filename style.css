@@ -3,34 +3,34 @@
     justify-content: center;
     font-size: 10vw;
     font-family: monospace;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #timeColonized {
     display: flex;
     justify-content: center;
-    font-size: 2vw;
+    font-size: 5vw;
     font-family: monospace;
     color: #8a8a8a;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #userTimeColonized {
     display: flex;
     justify-content: center;
-    font-size: 2vw;
+    font-size: 5vw;
     font-family: monospace;
     color: #8a8a8a;
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 
 #globe {
-    margin: 10px;
-    padding: 25px;
+    margin: 1vw;
+    padding: 4vw;
 }
 
 path.sphere-outline {
@@ -55,38 +55,38 @@ path.country-back {
 
 path.hour-meridian {
     fill: none;
-    stroke-width: 1.5;
+    stroke-width: 2;
     stroke: #827669;
 }
 
 path.hour-meridian-back {
     fill: none;
-    stroke-width: 1.5;
+    stroke-width: 2;
     stroke: #c2bbb4;
 }
 
 path.sun-meridian {
     fill: none;
-    stroke-width: 8;
+    stroke-width: 10;
     stroke: #d87d1c;
     stroke-linecap: round;
 }
 
 path.sun-meridian-back {
     fill: none;
-    stroke-width: 8;
+    stroke-width: 10;
     stroke: #f0cea7;
     stroke-linecap: round;
 }
 
 path.user-meridian {
     fill: none;
-    stroke-width: 1.5;
+    stroke-width: 2;
     stroke: #d87d1c;
 }
 
 path.user-meridian-back {
     fill: none;
-    stroke-width: 1.5;
+    stroke-width: 2;
     stroke: #f0cea7;
 }
