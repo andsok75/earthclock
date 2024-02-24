@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="style.css">
   <title></title>
-  <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
-  <script src="https://d3js.org/topojson.v3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@4/build/d3.min.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     const systems = [
         {
@@ -90,7 +90,7 @@
 
     window.onload = async function() {
         console.time("onload");
-        const countries = await fetchCompressedJson("countries-50m.json.gz", "gzip");
+        const countries = await fetchJson("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
         addCountries(countries);
         updateHourMeridians(decimalSystem);
         setInterval(updateTime, 10);
@@ -106,6 +106,16 @@
         }
         console.timeEnd("onload");
     };
+
+    async function fetchJson(url) {
+        console.time("fetch");
+        const response = await fetch(url);
+        console.timeEnd("fetch");
+        console.time("parse");
+        const obj = await response.json();
+        console.timeEnd("parse");
+        return obj;
+    }
 
     function createSystemSelection() {
         const select = document.createElement("select");
@@ -128,22 +138,6 @@
         const userSelectedSystemName = document.getElementById("select-system").value;
         userSelectedSystem = systems.find(system => system.name === userSelectedSystemName);
         updateHourMeridians(userSelectedSystem);
-    }
-
-    async function fetchCompressedJson(url, format) {
-        console.time("fetch");
-        const response = await fetch(url);
-        const compressedBlob = await response.blob();
-        console.timeEnd("fetch");
-        console.time("uncompress");
-        const stream = compressedBlob.stream().pipeThrough(new DecompressionStream(format));
-        const blob = await new Response(stream).blob();
-        const text = await blob.text();
-        console.timeEnd("uncompress");
-        console.time("parse");
-        const obj = JSON.parse(text);
-        console.timeEnd("parse");
-        return obj;
     }
 
     function addCountries(countries) {
