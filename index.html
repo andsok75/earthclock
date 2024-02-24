@@ -281,8 +281,8 @@
         const year = getYear(date);
         const dayOfYear = getDayOfYear(date);
 
-        const defaultSecondOfDay = getSecondOfDay(decimalSystem, date);
-        document.getElementById('time').innerHTML = `${year.p(4, decimalSystem.base)}/${dayOfYear.p(3, decimalSystem.base)}.${defaultSecondOfDay.p(5, decimalSystem.base)}`;
+        const decimalSecondOfDay = getSecondOfDay(decimalSystem, date);
+        document.getElementById('time').innerHTML = `${year.p(4, decimalSystem.base)}/${dayOfYear.p(3, decimalSystem.base)}.${decimalSecondOfDay.p(5, decimalSystem.base)}`;
 
         const system = Object.assign({}, userSelectedSystem || decimalSystem);  // fix the system for consistency
         const base = system.base;
