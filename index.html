@@ -146,50 +146,51 @@
     }
 
     function addCountries(countries) {
-        d3.select("svg")
+        const svg = d3.select("svg")
             .attr("viewBox", `0 0 ${svgViewBoxSize} ${svgViewBoxSize}`)
             .attr("preserveAspectRatio", "xMidYMid meet")
             .attr("overflow", "visible");
-        console.time("svg countries back");
+        console.time("countries back");
         projection.rotate(rotation());
         projection.clipAngle(180);
-        d3.select("svg").selectAll(".country-back").data(countries.features)
+        svg.selectAll(".country-back").data(countries.features)
             .enter()
             .append("path")
             .attr("class", "country-back")
             .attr("d", path);
-        console.timeEnd("svg countries back");
-        console.time("svg countries front");
+        console.timeEnd("countries back");
+        console.time("countries front");
         projection.clipAngle(90);
-        d3.select("svg").selectAll(".country").data(countries.features)
+        svg.selectAll(".country").data(countries.features)
             .enter()
             .append("path")
             .attr("class", "country")
             .attr("d", path);
-        console.timeEnd("svg countries front");
+        console.timeEnd("countries front");
     }
 
     function updateHourMeridians(system) {
-        console.time("svg hour meridians");
+        console.time("hour meridians");
         projection.rotate(rotation());
         meridians = d3.geoGraticule().step([360/system.hoursInDay, 90]).extent([[-180, -89.6], [180, 89.6]]);
+        svg = d3.select("svg");
 
         d3.selectAll(".hour-meridian").remove();
         d3.selectAll(".hour-meridian-back").remove();
         d3.selectAll(".hour-meridian-label").remove();
 
         projection.clipAngle(180);
-        d3.select("svg").insert("path", "path.country")
+        svg.insert("path", "path.country")
             .datum(meridians)
             .attr("class", "hour-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
-        d3.select("svg").insert("path", "path.sun-meridian")
+        svg.insert("path", "path.sun-meridian")
             .datum(meridians)
             .attr("class", "hour-meridian")
             .attr("d", path);
 
-        d3.select("svg").selectAll(".text")
+        svg.selectAll(".text")
             .data([...Array(system.hoursInDay).keys()])
             .enter()
             .append("text")
@@ -204,30 +205,31 @@
                 p[1] += f*(p[1]-svgViewBoxSize/2);
                 return `translate(${p})`;
             });
-        console.timeEnd("svg hour meridians");
+        console.timeEnd("hour meridians");
     }
 
     function updateSunMeridian(sunLongitude) {
         projection.rotate(rotation(sunLongitude));
+        const svg = d3.select("svg");
         if (previousSunLongitude === undefined) {
             projection.clipAngle(180);
-            d3.select("svg").insert("path", "path.country")
+            svg.insert("path", "path.country")
                 .datum(meridian)
                 .attr("class", "sun-meridian-back")
                 .attr("d", path);
             projection.clipAngle(90);
-            d3.select("svg").insert("path")
+            svg.insert("path")
                 .datum(meridian)
                 .attr("class", "sun-meridian")
                 .attr("d", path);
         } else {
             projection.clipAngle(180);
-            d3.select("svg").selectAll(".sun-meridian-back")
+            svg.selectAll(".sun-meridian-back")
                 .datum(meridian)
                 .attr("class", "sun-meridian-back")
                 .attr("d", path);
             projection.clipAngle(90);
-            d3.select("svg").selectAll(".sun-meridian")
+            svg.selectAll(".sun-meridian")
                 .datum(meridian)
                 .attr("class", "sun-meridian")
                 .attr("d", path);
@@ -238,12 +240,13 @@
     function addUserMeridian(userLongitude) {
         projection.rotate(rotation(userLongitude));
         projection.clipAngle(180);
-        d3.select("svg").insert("path", "path.country")
+        const svg = d3.select("svg");
+        svg.insert("path", "path.country")
             .datum(meridian)
             .attr("class", "user-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
-        d3.select("svg").insert("path", "path.sun-meridian")
+        svg.insert("path", "path.sun-meridian")
             .datum(meridian)
             .attr("class", "user-meridian")
             .attr("d", path);
