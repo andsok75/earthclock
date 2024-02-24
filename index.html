@@ -155,7 +155,7 @@
         projection.clipAngle(180);
         svg.selectAll(".country-back").data(countries.features)
             .enter()
-            .append("path")
+            .insert("path")
             .attr("class", "country-back")
             .attr("d", path);
         console.timeEnd("countries back");
@@ -163,7 +163,7 @@
         projection.clipAngle(90);
         svg.selectAll(".country").data(countries.features)
             .enter()
-            .append("path")
+            .insert("path")
             .attr("class", "country")
             .attr("d", path);
         console.timeEnd("countries front");
@@ -193,7 +193,7 @@
         svg.selectAll(".text")
             .data([...Array(system.hoursInDay).keys()])
             .enter()
-            .append("text")
+            .insert("text")
             .text(function(i) { return i.s(system.base); })
             .attr("class", "hour-meridian-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:200%")
