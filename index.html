@@ -195,7 +195,7 @@
         svg.selectAll(".text")
             .data([...Array(system.hoursInDay).keys()])
             .enter()
-            .insert("text")
+            .insert("text", "path.country")
             .text(function(i) { return i.s(system.base); })
             .attr("class", "hour-meridian-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:600%")
