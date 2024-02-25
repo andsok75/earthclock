@@ -135,26 +135,20 @@
             .attr("viewBox", `0 0 ${svgViewBoxSize} ${svgViewBoxSize}`)
             .attr("preserveAspectRatio", "xMidYMid meet")
             .attr("overflow", "visible");
-        console.time("features");
         const features = topojson.feature(countries, countries.objects.countries).features;
-        console.timeEnd("features");
         projection.rotate(rotation());
-        console.time("countries back");
         projection.clipAngle(180);
         svg.selectAll(".country-back").data(features)
             .enter()
             .insert("path")
             .attr("class", "country-back")
             .attr("d", path);
-        console.timeEnd("countries back");
-        console.time("countries front");
         projection.clipAngle(90);
         svg.selectAll(".country").data(features)
             .enter()
             .insert("path")
             .attr("class", "country")
             .attr("d", path);
-        console.timeEnd("countries front");
         svg.insert("path")
             .datum({type: "Sphere"})
             .attr("class", "sphere-outline")
@@ -162,7 +156,6 @@
     }
 
     function updateHourMeridians(system) {
-        console.time("hour meridians");
         projection.rotate(rotation());
         meridians = d3.geoGraticule().step([360/system.hoursInDay, 0]).extent([[-180, -89.6], [180, 89.6]]);
         svg = d3.select("svg");
@@ -197,7 +190,6 @@
                 p[1] += f*(p[1]-svgViewBoxSize/2);
                 return `translate(${p})`;
             });
-        console.timeEnd("hour meridians");
     }
 
     function updateSunMeridian(sunLongitude) {
