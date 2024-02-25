@@ -30,6 +30,13 @@
     margin-bottom: 15px;
 }
 
+.period {
+    display: inline-block;
+    margin: 1px;
+    font-size: 4vw;
+    color: #a5a5a5;
+}
+
 #globe {
     margin: 1vw;
     padding: 4vw;
