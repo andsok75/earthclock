@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="style.css">
   <title></title>
-  <script src="https://cdn.jsdelivr.net/npm/d3@4/build/d3.min.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     const systems = [
@@ -90,7 +90,7 @@
 
     window.onload = async function() {
         console.time("onload");
-        const countries = await fetchJson("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
+        const countries = await d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
         addCountries(countries);
         updateHourMeridians(decimalSystem);
         setInterval(updateTime, 10);
@@ -106,16 +106,6 @@
         }
         console.timeEnd("onload");
     };
-
-    async function fetchJson(url) {
-        console.time("fetch");
-        const response = await fetch(url);
-        console.timeEnd("fetch");
-        console.time("parse");
-        const obj = await response.json();
-        console.timeEnd("parse");
-        return obj;
-    }
 
     function createSystemSelection() {
         const select = document.createElement("select");
