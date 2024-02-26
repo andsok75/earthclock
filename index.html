@@ -10,19 +10,6 @@
   <script type="text/javascript">
     const systems = [
         {
-            // Besides inconsistent bases, another peculiarity about traditional system is that the week is not reset at the beginning of the year.
-            // The first and the last weeks of the year may be incomplete because some days of the week may be spilled over to the previous or next year.
-            // In the other systems, each year starts with week 0 and day 0, while the last week of the year is allowed to be incomplete.
-            name: "traditional",
-            base: 10,
-            daysInWeek: 7,
-            hoursInDay: 24,
-            minutesInHour: 60,
-            secondsInMinute: 60,
-            secondsInHour: 60*60,
-            secondsInDay: 24*60*60
-        },
-        {
             name: "octal",
             base: 8,
             daysInWeek: 8,
@@ -71,6 +58,19 @@
             secondsInMinute: 256,
             secondsInHour: 256*256,
             secondsInDay: 16*256*256
+        },
+        {
+            // Besides inconsistent bases, another peculiarity about traditional system is that the week is not reset at the beginning of the year.
+            // The first and the last weeks of the year may be incomplete because some days of the week may be spilled over to the previous or next year.
+            // In the other systems, each year starts with week 0 and day 0, while the last week of the year is allowed to be incomplete.
+            name: "traditional",
+            base: 10,
+            daysInWeek: 7,
+            hoursInDay: 24,
+            minutesInHour: 60,
+            secondsInMinute: 60,
+            secondsInHour: 60*60,
+            secondsInDay: 24*60*60
         }
     ]
     const decimalSystem = systems.find(system => system.name === "decimal");
