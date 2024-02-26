@@ -1,6 +1,5 @@
 #time {
-    display: flex;
-    justify-content: center;
+    text-align: center;
     font-size: 10vw;
     font-family: monospace;
     margin-left: 1px;
@@ -8,8 +7,7 @@
 }
 
 #timeColonized {
-    display: flex;
-    justify-content: center;
+    text-align: center;
     font-size: 6vw;
     font-family: monospace;
     font-weight: 500;
@@ -19,8 +17,7 @@
 }
 
 #userTimeColonized {
-    display: flex;
-    justify-content: center;
+    text-align: center;
     font-size: 6vw;
     font-family: monospace;
     font-weight: 500;
@@ -31,10 +28,10 @@
 }
 
 .period {
-    display: inline-block;
-    margin: 1px;
     font-size: 4vw;
+    vertical-align: top;
     color: #a5a5a5;
+    margin-left: 0.5vw;
 }
 
 #globe {
