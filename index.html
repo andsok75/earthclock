@@ -264,7 +264,7 @@
         const base = system.base;
         const secondOfDay = getSecondOfDay(system, date);
 
-        const offset = system.name !== "traditional" ? 0 : new Date(year, 0).getUTCDay()-1;
+        const offset = system.name !== "traditional" ? 0 : new Date(Date.UTC(year, 0)).getUTCDay()-1;
         const week = Math.trunc((dayOfYear+offset)/system.daysInWeek);
         const dayOfWeek = (dayOfYear+offset)%system.daysInWeek;
         const time = getTimeFromSeconds(system, secondOfDay, dayOfWeek);
