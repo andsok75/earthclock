@@ -182,7 +182,7 @@
             .text(function(i) { return i.s(system.base); })
             .attr("class", "hour-meridian-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:600%")
-            .attr("dy", "2.8%")
+            .attr("dy", "3%")
             .attr("transform", function(i) {
                 const p = projection([180-i*360/system.hoursInDay, 0]);
                 const f = 0.06;
