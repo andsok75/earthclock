@@ -6,7 +6,7 @@
     margin-right: 1px;
 }
 
-#timeColonized {
+#system-time {
     text-align: center;
     font-size: 6vw;
     font-family: monospace;
@@ -16,7 +16,7 @@
     margin-right: 1px;
 }
 
-#userTimeColonized {
+#user-time {
     text-align: center;
     font-size: 6vw;
     font-family: monospace;
@@ -27,7 +27,7 @@
     margin-bottom: 15px;
 }
 
-.period {
+#period {
     font-size: 4vw;
     vertical-align: top;
     color: #a5a5a5;
