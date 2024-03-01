@@ -271,7 +271,7 @@
         document.getElementById('timeColonized').innerHTML = `${time.hour.s(base)}:${time.minute.p(2, base)}:${time.second.p(2, base)}&nbsp;of&nbsp;week&nbsp;${week.s(base)}`;
 
         const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
-        if( previousSunLongitude === undefined || Math.abs(sunLongitude-previousSunLongitude) > 0.01) {
+        if( previousSunLongitude === undefined || Math.abs(sunLongitude-previousSunLongitude) > 0.1) {
             updateSunMeridian(sunLongitude);
         }
 
