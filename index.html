@@ -275,10 +275,7 @@
             updateSunMeridian(sunLongitude);
         }
 
-        if (userLongitude === undefined) {
-            document.getElementById('userTimeColonized').innerHTML = "&nbsp;";
-            return;
-        }
+        if (userLongitude === undefined) { return; }
 
         // Longitude below is measured in seconds, as an integer ranging from 0 up to number of seconds in a day.
         // In decimal system, Greenwich meridian is at 50000 and Sydney is at 8000 seconds.
@@ -332,9 +329,9 @@
   </script>
   </head>
   <body>
-    <div id="time"></div>
-    <div id="timeColonized"></div>
-    <div id="userTimeColonized"></div>
+    <div id="time">&nbsp;</div>
+    <div id="timeColonized">&nbsp;</div>
+    <div id="userTimeColonized">&nbsp;</div>
     <svg id="globe"></svg>
 </body>
 </html>
