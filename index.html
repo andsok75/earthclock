@@ -264,9 +264,9 @@
             document.getElementById('time').innerHTML = '<span id="year"></span>/<span id="day"></span>.<span id="decimal-second"></span>';
         }
 
-        document.getElementById('year').textContent = year.toString(decimalSystem.base).padStart(4, '0');
-        document.getElementById('day').textContent = dayOfYear.toString(decimalSystem.base).padStart(3, '0');
-        document.getElementById('decimal-second').textContent = decimalSecondOfDay.toString(decimalSystem.base).padStart(5, '0');
+        updateElementById('year', year.toString(decimalSystem.base).padStart(4, '0'));
+        updateElementById('day', dayOfYear.toString(decimalSystem.base).padStart(3, '0'));
+        updateElementById('decimal-second', decimalSecondOfDay.toString(decimalSystem.base).padStart(5, '0'));
 
         const system = Object.assign({}, userSelectedSystem || decimalSystem);  // fix the system for consistency
         const base = system.base;
@@ -282,10 +282,10 @@
             document.getElementById('system-time').innerHTML = '<span id="hour"></span>:<span id="minute"></span>:<span id="second"></span> of week <span id="week"></span>';
         }
 
-        document.getElementById('hour').textContent = time.hour.toString(base).padStart(2, nbsp);
-        document.getElementById('minute').textContent = time.minute.toString(base).padStart(2, '0');
-        document.getElementById('second').textContent = time.second.toString(base).padStart(2, '0');
-        document.getElementById('week').textContent = week.toString(base).padEnd(2, nbsp);
+        updateElementById('hour', time.hour.toString(base).padStart(2, nbsp));
+        updateElementById('minute', time.minute.toString(base).padStart(2, '0'));
+        updateElementById('second', time.second.toString(base).padStart(2, '0'));
+        updateElementById('week', week.toString(base).padEnd(2, nbsp));
 
         const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
         if( previousSunLongitude === undefined || Math.abs(sunLongitude-previousSunLongitude) > 0.1) {
@@ -308,11 +308,17 @@
             document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span><span id="period"></span> at <span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>';
         }
 
-        document.getElementById('user-hour').textContent = userTime.hour.toString(base);
-        document.getElementById('user-minute').textContent = userTime.minute.toString(base).padStart(2, '0');
-        document.getElementById('period').textContent = period;
-        document.getElementById('hour-at-user-noon').textContent = timeAtUserNoon.hour.toString(base);
-        document.getElementById('minute-at-user-noon').textContent = timeAtUserNoon.minute.toString(base).padStart(2, '0');
+        updateElementById('user-hour', userTime.hour.toString(base));
+        updateElementById('user-minute', userTime.minute.toString(base).padStart(2, '0'));
+        updateElementById('period', period);
+        updateElementById('hour-at-user-noon', timeAtUserNoon.hour.toString(base));
+        updateElementById('minute-at-user-noon', timeAtUserNoon.minute.toString(base).padStart(2, '0'));
+    }
+
+    function updateElementById(id, value) {
+        if (document.getElementById(id).textContent !== value) {
+            document.getElementById(id).textContent = value;
+        }
     }
 
     function getYear(date) {
