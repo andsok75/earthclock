@@ -71,17 +71,33 @@ path.hour-meridian-back {
     stroke: #c2bbb4;
 }
 
-path.sun-meridian {
+path.mean-sun-meridian {
     fill: none;
     stroke-width: 15;
     stroke: #d87d1c;
     stroke-linecap: round;
 }
 
-path.sun-meridian-back {
+path.apparent-sun-meridian {
+    fill: none;
+    stroke-width: 15;
+    stroke: #d87d1c;
+    opacity: 0.15;
+    stroke-linecap: round;
+}
+
+path.mean-sun-meridian-back {
     fill: none;
     stroke-width: 15;
     stroke: #f0cea7;
+    stroke-linecap: round;
+}
+
+path.apparent-sun-meridian-back {
+    fill: none;
+    stroke-width: 15;
+    stroke: #f0cea7;
+    opacity: 0.15;
     stroke-linecap: round;
 }
 

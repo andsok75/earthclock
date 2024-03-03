@@ -87,7 +87,7 @@
 
     let userSelectedSystem = undefined;
     let userLongitude = undefined;
-    let previousSunLongitude = undefined;
+    let previousMeanSunLongitude = undefined;
 
     window.onload = async function() {
         console.time("onload");
@@ -171,7 +171,7 @@
             .attr("class", "hour-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
-        svg.insert("path", "path.sun-meridian")
+        svg.insert("path", "path.mean-sun-meridian")
             .datum(meridians)
             .attr("class", "hour-meridian")
             .attr("d", path);
@@ -193,33 +193,57 @@
             });
     }
 
-    function updateSunMeridian(sunLongitude) {
-        projection.rotate(rotation(sunLongitude));
+    function updateSunMeridian(meanSunLongitude, apparentSunLongitude) {
         const svg = d3.select("svg");
-        if (previousSunLongitude === undefined) {
+        if (previousMeanSunLongitude === undefined) {
+            projection.rotate(rotation(meanSunLongitude));
             projection.clipAngle(180);
             svg.insert("path", "path.country")
                 .datum(meridian)
-                .attr("class", "sun-meridian-back")
+                .attr("class", "mean-sun-meridian-back")
                 .attr("d", path);
             projection.clipAngle(90);
             svg.insert("path")
                 .datum(meridian)
-                .attr("class", "sun-meridian")
+                .attr("class", "mean-sun-meridian")
                 .attr("d", path);
-        } else {
+            projection.rotate(rotation(apparentSunLongitude));
             projection.clipAngle(180);
-            svg.selectAll(".sun-meridian-back")
+            svg.insert("path", "path.country")
                 .datum(meridian)
-                .attr("class", "sun-meridian-back")
+                .attr("class", "apparent-sun-meridian-back")
                 .attr("d", path);
             projection.clipAngle(90);
-            svg.selectAll(".sun-meridian")
+            svg.insert("path")
                 .datum(meridian)
-                .attr("class", "sun-meridian")
+                .attr("class", "apparent-sun-meridian")
                 .attr("d", path);
+        } else {
+            projection.rotate(rotation(meanSunLongitude));
+            projection.clipAngle(180);
+            svg.selectAll(".mean-sun-meridian-back")
+                .datum(meridian)
+                .attr("class", "mean-sun-meridian-back")
+                .attr("d", path);
+            projection.clipAngle(90);
+            svg.selectAll(".mean-sun-meridian")
+                .datum(meridian)
+                .attr("class", "mean-sun-meridian")
+                .attr("d", path);
+            projection.rotate(rotation(apparentSunLongitude));
+            projection.clipAngle(180);
+            svg.selectAll(".apparent-sun-meridian-back")
+                .datum(meridian)
+                .attr("class", "apparent-sun-meridian-back")
+                .attr("d", path);
+            projection.clipAngle(90);
+            svg.selectAll(".apparent-sun-meridian")
+                .datum(meridian)
+                .attr("class", "apparent-sun-meridian")
+                .attr("d", path);
+
         }
-        previousSunLongitude = sunLongitude;
+        previousMeanSunLongitude = meanSunLongitude;
     }
 
     function addUserMeridian(userLongitude) {
@@ -231,7 +255,7 @@
             .attr("class", "user-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
-        svg.insert("path", "path.sun-meridian")
+        svg.insert("path", "path.mean-sun-meridian")
             .datum(meridian)
             .attr("class", "user-meridian")
             .attr("d", path);
@@ -247,11 +271,6 @@
         //
         // Note that the mean sun is usually different from the apparent sun, so apparent noon may be ahead or behind the mean noon by a few minutes.
         // For details, see https://en.wikipedia.org/wiki/Equation_of_time
-        //
-        // The following command yields a table showing decimal minutes from mean noon to apparent noon for each day of year 2024.
-        // For instance, on day 40 the apparent noon occurs later than the mean noon by almost ten decimal minutes.
-        // (YEAR=2024; curl -s "https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND='10'&OBJ_DATA='NO'&MAKE_EPHEM='YES'&EPHEM_TYPE='OBSERVER'&CENTER='0,0,0@399'&START_TIME='"$YEAR"-01-01%2012:00'&STOP_TIME='"$YEAR"-12-31%2012:00'&STEP_SIZE='1%20d'&CSV_FORMAT='NO'&QUANTITIES='42'" | awk 'NR==1{printf "day minutes\n"}/\$\$SOE/{flag=1;next}/\$\$EOE/{flag=0}flag{h=$(NF-2);m=$(NF-1);s=$NF;eot=(h=="-00"?-1:1)*(m*60+s)*10/864; printf "%3d%7.2f\n",i++,-eot}' -)
-        // For details, see https://ssd-api.jpl.nasa.gov/doc/horizons.html
         const date = new Date();
 
         const year = getYear(date);
@@ -287,9 +306,11 @@
         updateElementById('second', time.second.toString(base).padStart(2, '0'));
         updateElementById('week', week.toString(base).padEnd(2, nbsp));
 
-        const sunLongitude = 180*(1-secondOfDay/(system.secondsInDay/2));
-        if( previousSunLongitude === undefined || Math.abs(sunLongitude-previousSunLongitude) > 0.1) {
-            updateSunMeridian(sunLongitude);
+        const meanSunLongitude = 180*(1-decimalSecondOfDay/(decimalSystem.secondsInDay/2));
+        if( previousMeanSunLongitude === undefined || Math.abs(meanSunLongitude-previousMeanSunLongitude) > 0.1) {
+            const day = dayOfYear+decimalSecondOfDay/decimalSystem.secondsInDay;
+            const apparentSunLongitude = meanSunLongitude - eotInDegrees(day);
+            updateSunMeridian(meanSunLongitude, apparentSunLongitude);
         }
 
         if (userLongitude === undefined) { return; }
@@ -357,6 +378,14 @@
         const period = (-n/2 <= i && i < 0) || n/2 <= i ? "am" : "pm";
         return [secondsToUserNoon, period];
     }
+
+    function eotInDegrees(day) {
+        // This function returns the difference in degrees between mean and apparent sun
+        // using a simple approximation from http://www58.homepage.villanova.edu/alan.whitman/eqoftime.pdf
+        const eotInTraditionalMinutes = 229.18*[-0.0334*Math.sin(2*Math.PI/365.24*day)+0.04184*Math.sin(4*Math.PI/365.24*day+3.5884)];
+        return 360/(24*60)*eotInTraditionalMinutes;
+    }
+
   </script>
   </head>
   <body>
