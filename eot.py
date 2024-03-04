@@ -46,15 +46,15 @@ for line in lines[lines.index('$$SOE')+1:lines.index('$$EOE')]:
 assert len(eots_of_year[start-1]) == 1
 assert len(eots_of_year[end+1]) == 1
 
-edges = {}
-edges[start-1] = (None, eots_of_year[start-1][0])
-edges[end+1] = (eots_of_year[end+1][0], None)
+e = {}
+e[start-1] = (None, eots_of_year[start-1][0])
+e[end+1] = (eots_of_year[end+1][0], None)
 for year in range(start, end+1):
-    edges[year] = (eots_of_year[year][0], eots_of_year[year][-1])
+    e[year] = (eots_of_year[year][0], eots_of_year[year][-1])
 
 for year in range(start, end+1):
-    eots_of_year[year].insert(0, edges[year-1][1])
-    eots_of_year[year].append(edges[year+1][0])
+    eots_of_year[year].insert(0, e[year-1][1])
+    eots_of_year[year].append(e[year+1][0])
 
 del eots_of_year[start-1]
 del eots_of_year[end+1]
