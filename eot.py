@@ -3,6 +3,9 @@
 # This script obtains apparent solar time at location (0, 0) at 12:00:00 UTC for every day from 2000-01-01 until 2100-12-31
 # and converts these data into equation of time (eot), the time difference between the mean and apparent sun expressed in traditional minutes.
 # The equation of time is saved in json format with year as key and array of eot minutes for every day of the year as value.
+# Each year is augmented (to simplify interpolation) with two extra values of eot minutes:
+# 1) the last eot minutes of the previous year is added at the start,
+# 2) the first eot minutes of the next year is added at the end.
 
 import json
 import sys
@@ -10,6 +13,8 @@ from collections import defaultdict
 
 import requests
 
+start = 2000
+end = 2100
 response = requests.get(
     "https://ssd.jpl.nasa.gov/api/horizons.api",
     params = {
@@ -20,26 +25,41 @@ response = requests.get(
         "EPHEM_TYPE": "'OBSERVER'",
         "CENTER": "'coord@399'",
         "SITE_COORD": "'0,0,0'",
-        "START_TIME": "'2000-01-01 12:00'",
-        "STOP_TIME": "'2100-12-31 12:00'",
+        "START_TIME": f"'{start-1}-12-31 12:00'",
+        "STOP_TIME": f"'{end+1}-01-01 12:00'",
         "STEP_SIZE": "'1d'",
-        "TIME_DIGITS": "'SECONDS'",
         "CSV_FORMAT": "'NO'",
         "QUANTITIES": "'34'",
     },
 )
 lines = response.text.split('\n')
-eot_per_year = defaultdict(list)
+eots_of_year = defaultdict(list)
 for line in lines[lines.index('$$SOE')+1:lines.index('$$EOE')]:
     a = line.split()
-    year = a[0].split('-')[0]
+    year = int(a[0].split('-')[0])
     s = float(a[-1])
     m = float(a[-2])
     h = float(a[-3])
     eot = (h + (m + s/60)/60 - 12)*60
-    eot_per_year[year].append(round(eot, 2))
+    eots_of_year[year].append(round(eot, 2))
 
-json.dump(eot_per_year, sys.stdout, separators=(',', ':'))
+assert len(eots_of_year[start-1]) == 1
+assert len(eots_of_year[end+1]) == 1
+
+edges = {}
+edges[start-1] = (None, eots_of_year[start-1][0])
+edges[end+1] = (eots_of_year[end+1][0], None)
+for year in range(start, end+1):
+    edges[year] = (eots_of_year[year][0], eots_of_year[year][-1])
+
+for year in range(start, end+1):
+    eots_of_year[year].insert(0, edges[year-1][1])
+    eots_of_year[year].append(edges[year+1][0])
+
+del eots_of_year[start-1]
+del eots_of_year[end+1]
+
+json.dump(eots_of_year, sys.stdout, separators=(',', ':'))
 
 
 """
@@ -47,21 +67,20 @@ The response from Horizons API should look as follows, with data contained betwe
 More details on the API usage can be found at https://ssd-api.jpl.nasa.gov/doc/horizons.html.
 
 
-```
-API VERSION: 1.2
+```API VERSION: 1.2
 API SOURCE: NASA/JPL Horizons API
 
 
 
 *******************************************************************************
-Ephemeris / API_USER Sun Mar  3 19:48:12 2024 Pasadena, USA      / Horizons    
+Ephemeris / API_USER Sun Mar  3 21:55:55 2024 Pasadena, USA      / Horizons    
 *******************************************************************************
 Target body name: Sun (10)                        {source: DE441}
 Center body name: Earth (399)                     {source: DE441}
 Center-site name: (user defined site below)
 *******************************************************************************
-Start time      : A.D. 2000-Jan-01 12:00:00.0000 UT      
-Stop  time      : A.D. 2100-Dec-31 12:00:00.0000 UT      
+Start time      : A.D. 1999-Dec-31 12:00:00.0000 UT      
+Stop  time      : A.D. 2101-Jan-01 12:00:00.0000 UT      
 Step-size       : 1440 minutes
 *******************************************************************************
 Target pole/equ : IAU_SUN                         {East-longitude positive}
@@ -85,14 +104,16 @@ Table cut-offs 1: Elevation (-90.0deg=NO ),Airmass (>38.000=NO), Daylight (NO )
 Table cut-offs 2: Solar elongation (  0.0,180.0=NO ),Local Hour Angle( 0.0=NO )
 Table cut-offs 3: RA/DEC angular rate (     0.0=NO )                           
 *******************************************************************************
- Date__(UT)__HR:MN:SS     L_Ap_SOL_Time
-***************************************
+ Date__(UT)__HR:MN     L_Ap_SOL_Time
+************************************
 $$SOE
- 2000-Jan-01 12:00:00 *m  11 56 43.2074
- 2000-Jan-02 12:00:00 *m  11 56 14.8592
+ 1999-Dec-31 12:00 *m  11 57 11.8441
+ 2000-Jan-01 12:00 *m  11 56 43.2074
+ 2000-Jan-02 12:00 *m  11 56 14.8592
 ...
- 2100-Dec-30 12:00:00 *m  11 57 38.1239
- 2100-Dec-31 12:00:00 *m  11 57 09.3426
+ 2100-Dec-30 12:00 *m  11 57 38.1239
+ 2100-Dec-31 12:00 *m  11 57 09.3426
+ 2101-Jan-01 12:00 *m  11 56 40.8494
 $$EOE
 *******************************************************************************
 Column meaning:
@@ -168,6 +189,7 @@ Computations by ...
     Author      : Jon.D.Giorgini@jpl.nasa.gov
 
 *******************************************************************************
+
 
 
 ```
