@@ -67,7 +67,8 @@ The response from Horizons API should look as follows, with data contained betwe
 More details on the API usage can be found at https://ssd-api.jpl.nasa.gov/doc/horizons.html.
 
 
-```API VERSION: 1.2
+```
+API VERSION: 1.2
 API SOURCE: NASA/JPL Horizons API
 
 
