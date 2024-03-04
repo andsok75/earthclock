@@ -87,14 +87,16 @@
 
     let userSelectedSystem = undefined;
     let userLongitude = undefined;
+    let meanSunMeridianInserted = false;
     let previousMeanSunLongitude = undefined;
 
     const traditionalMinutesInDegree = 4;
+    let apparentSunMeridianInserted = false;
     let eotsOfYear = undefined;
-    fetch("eot.json").then(response => response.json()).then(obj => eotsOfYear = obj);
 
     window.onload = async function() {
         console.time("onload");
+        eotsOfYear = await (await fetch("eot.json")).json();
         const countries = await d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
         addCountries(countries);
         updateHourMeridians(decimalSystem);
@@ -199,7 +201,7 @@
 
     function updateSunMeridian(meanSunLongitude, eot) {
         const svg = d3.select("svg");
-        if (previousMeanSunLongitude === undefined) {
+        if (!meanSunMeridianInserted) {
             projection.rotate(rotation(meanSunLongitude));
             projection.clipAngle(180);
             svg.insert("path", "path.country")
@@ -211,19 +213,7 @@
                 .datum(meridian)
                 .attr("class", "mean-sun-meridian")
                 .attr("d", path);
-            if (eot !== undefined) {
-                projection.rotate(rotation(meanSunLongitude-eot/traditionalMinutesInDegree));
-                projection.clipAngle(180);
-                svg.insert("path", "path.country")
-                    .datum(meridian)
-                    .attr("class", "apparent-sun-meridian-back")
-                    .attr("d", path);
-                projection.clipAngle(90);
-                svg.insert("path")
-                    .datum(meridian)
-                    .attr("class", "apparent-sun-meridian")
-                    .attr("d", path);
-            }
+            meanSunMeridianInserted = true;
         } else {
             projection.rotate(rotation(meanSunLongitude));
             projection.clipAngle(180);
@@ -236,21 +226,35 @@
                 .datum(meridian)
                 .attr("class", "mean-sun-meridian")
                 .attr("d", path);
-            if (eot !== undefined) {
-                projection.rotate(rotation(meanSunLongitude-eot/traditionalMinutesInDegree));
-                projection.clipAngle(180);
-                svg.selectAll(".apparent-sun-meridian-back")
-                    .datum(meridian)
-                    .attr("class", "apparent-sun-meridian-back")
-                    .attr("d", path);
-                projection.clipAngle(90);
-                svg.selectAll(".apparent-sun-meridian")
-                    .datum(meridian)
-                    .attr("class", "apparent-sun-meridian")
-                    .attr("d", path);
-            }
         }
-        previousMeanSunLongitude = meanSunLongitude;
+
+        if (eot === undefined) { return; }
+        if (!apparentSunMeridianInserted) {
+            projection.rotate(rotation(meanSunLongitude-eot/traditionalMinutesInDegree));
+            projection.clipAngle(180);
+            svg.insert("path", "path.country")
+                .datum(meridian)
+                .attr("class", "apparent-sun-meridian-back")
+                .attr("d", path);
+            projection.clipAngle(90);
+            svg.insert("path")
+                .datum(meridian)
+                .attr("class", "apparent-sun-meridian")
+                .attr("d", path);
+            apparentSunMeridianInserted = true;
+        } else {
+            projection.rotate(rotation(meanSunLongitude-eot/traditionalMinutesInDegree));
+            projection.clipAngle(180);
+            svg.selectAll(".apparent-sun-meridian-back")
+                .datum(meridian)
+                .attr("class", "apparent-sun-meridian-back")
+                .attr("d", path);
+            projection.clipAngle(90);
+            svg.selectAll(".apparent-sun-meridian")
+                .datum(meridian)
+                .attr("class", "apparent-sun-meridian")
+                .attr("d", path);
+        }
     }
 
     function addUserMeridian(userLongitude) {
@@ -318,6 +322,7 @@
             const day = dayOfYear+decimalSecondOfDay/decimalSystem.secondsInDay;
             const eot = getEot(year, day);
             updateSunMeridian(meanSunLongitude, eot);
+            previousMeanSunLongitude = meanSunLongitude;
         }
 
         if (userLongitude === undefined) { return; }
