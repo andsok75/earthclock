@@ -76,14 +76,12 @@ path.mean-sun-meridian {
     fill: none;
     stroke-width: 5;
     stroke: red;
-    stroke-linecap: round;
 }
 
 path.mean-sun-meridian-back {
     fill: none;
     stroke-width: 5;
     stroke: lightcoral;
-    stroke-linecap: round;
 }
 
 path.north-pole-circle {
@@ -101,7 +99,6 @@ path.apparent-sun-meridian {
     stroke-width: 5;
     stroke: red;
     opacity: 0.05;
-    stroke-linecap: round;
 }
 
 path.apparent-sun-meridian-back {
@@ -109,7 +106,6 @@ path.apparent-sun-meridian-back {
     stroke-width: 5;
     stroke: lightcoral;
     opacity: 0.05;
-    stroke-linecap: round;
 }
 
 path.user-meridian {
