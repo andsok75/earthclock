@@ -327,7 +327,7 @@
         updateElementById('week', week.toString(base).padEnd(2, nbsp));
 
         const meanSunLongitude = 180*(1-decimalSecondOfDay/(decimalSystem.secondsInDay/2));
-        if( previousMeanSunLongitude === undefined || Math.abs(meanSunLongitude-previousMeanSunLongitude) > 0.1) {
+        if( previousMeanSunLongitude === undefined || Math.abs(meanSunLongitude-previousMeanSunLongitude) > 0.01) {
             const day = dayOfYear+decimalSecondOfDay/decimalSystem.secondsInDay;
             const eot = getEot(year, day);
             updateSunMeridian(meanSunLongitude, eot);
