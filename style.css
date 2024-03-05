@@ -100,7 +100,7 @@ path.apparent-sun-meridian {
     fill: none;
     stroke-width: 5;
     stroke: red;
-    opacity: 0.1;
+    opacity: 0.05;
     stroke-linecap: round;
 }
 
@@ -108,18 +108,18 @@ path.apparent-sun-meridian-back {
     fill: none;
     stroke-width: 5;
     stroke: lightcoral;
-    opacity: 0.1;
+    opacity: 0.05;
     stroke-linecap: round;
 }
 
 path.user-meridian {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 5;
     stroke: orange;
 }
 
 path.user-meridian-back {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 5;
     stroke: palegoldenrod;
 }
