@@ -165,7 +165,7 @@
 
     function updateHourMeridians(system) {
         projection.rotate(rotation());
-        meridians = d3.geoGraticule().step([360/system.hoursInDay, 0]).extent([[-180, -89.6], [180, 89.6]]);
+        meridians = d3.geoGraticule().step([360/system.hoursInDay, 0]).extent([[-180, -90], [180, 90]]);
         svg = d3.select("svg");
 
         d3.selectAll(".hour-meridian").remove();
