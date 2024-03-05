@@ -2,6 +2,7 @@
     text-align: center;
     font-size: 10vw;
     font-family: monospace;
+    color: black;
     margin-left: 1px;
     margin-right: 1px;
 }
@@ -11,7 +12,7 @@
     font-size: 6vw;
     font-family: monospace;
     font-weight: 500;
-    color: #8a8a8a;
+    color: gray;
     margin-left: 1px;
     margin-right: 1px;
 }
@@ -21,7 +22,7 @@
     font-size: 6vw;
     font-family: monospace;
     font-weight: 500;
-    color: #8a8a8a;
+    color: gray;
     margin-left: 1px;
     margin-right: 1px;
     margin-bottom: 15px;
@@ -30,7 +31,7 @@
 #period {
     font-size: 4vw;
     vertical-align: top;
-    color: #a5a5a5;
+    color: gray;
     margin-left: 0.5vw;
 }
 
@@ -42,7 +43,7 @@
 path.sphere-outline {
     fill: none;
     stroke-width: 0.5;
-    stroke: #827669;
+    stroke: gray;
 }
 
 path.country {
@@ -62,53 +63,63 @@ path.country-back {
 path.hour-meridian {
     fill: none;
     stroke-width: 2;
-    stroke: #827669;
+    stroke: gray;
 }
 
 path.hour-meridian-back {
     fill: none;
     stroke-width: 2;
-    stroke: #c2bbb4;
+    stroke: lightgray;
 }
 
 path.mean-sun-meridian {
     fill: none;
-    stroke-width: 15;
-    stroke: #d87d1c;
-    stroke-linecap: round;
-}
-
-path.apparent-sun-meridian {
-    fill: none;
-    stroke-width: 15;
-    stroke: #d87d1c;
-    opacity: 0.15;
+    stroke-width: 5;
+    stroke: red;
     stroke-linecap: round;
 }
 
 path.mean-sun-meridian-back {
     fill: none;
-    stroke-width: 15;
-    stroke: #f0cea7;
+    stroke-width: 5;
+    stroke: lightcoral;
+    stroke-linecap: round;
+}
+
+path.north-pole-circle {
+    fill: red;
+    stroke: red;
+}
+
+path.north-pole-circle-back {
+    fill: lightcoral;
+    stroke: lightcoral;
+}
+
+path.apparent-sun-meridian {
+    fill: none;
+    stroke-width: 5;
+    stroke: red;
+    opacity: 0.1;
     stroke-linecap: round;
 }
 
 path.apparent-sun-meridian-back {
     fill: none;
-    stroke-width: 15;
-    stroke: #f0cea7;
-    opacity: 0.15;
+    stroke-width: 5;
+    stroke: lightcoral;
+    opacity: 0.1;
     stroke-linecap: round;
 }
 
 path.user-meridian {
     fill: none;
-    stroke-width: 5;
-    stroke: #d87d1c;
+    stroke-width: 2;
+    stroke: orange;
 }
 
 path.user-meridian-back {
     fill: none;
-    stroke-width: 5;
-    stroke: #f0cea7;
+    stroke-width: 2;
+    stroke: palegoldenrod;
 }

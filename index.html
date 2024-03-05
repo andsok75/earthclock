@@ -82,6 +82,7 @@
         .rotate(rotation());
     const path = d3.geoPath().projection(projection);
     const meridian = d3.geoGraticule().step([360, 0]);
+    const northPoleCircle = d3.geoCircle().center([0,90]).radius(1);
 
     function rotation(roll=0, pitch=-90, yaw=0) { return [roll, pitch, yaw]; }
 
@@ -208,10 +209,18 @@
                 .datum(meridian)
                 .attr("class", "mean-sun-meridian-back")
                 .attr("d", path);
+            svg.insert("path", "path.country")
+                .datum(northPoleCircle)
+                .attr("class", "north-pole-circle-back")
+                .attr("d", path);
             projection.clipAngle(90);
             svg.insert("path")
                 .datum(meridian)
                 .attr("class", "mean-sun-meridian")
+                .attr("d", path);
+            svg.insert("path")
+                .datum(northPoleCircle)
+                .attr("class", "north-pole-circle")
                 .attr("d", path);
             meanSunMeridianInserted = true;
         } else {
