@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 # This script obtains apparent solar time at location (0, 0) at 12:00:00 UTC for every day from 2000-01-01 until 2100-12-31
-# and converts these data into equation of time (eot), the time difference between the mean and apparent sun expressed in traditional minutes.
-# The equation of time is saved in json format with year as key and array of eot minutes for every day of the year as value.
-# Each year is augmented (to simplify interpolation) with two extra values of eot minutes:
-# 1) the last eot minutes of the previous year is added at the start,
-# 2) the first eot minutes of the next year is added at the end.
+# and converts it into equation of time (eot), the time difference between the mean and apparent sun expressed in minutes.
+# The equation of time is saved in json format with year as key and array of eot values for every day of the year as the key's value.
+# The array for each year is augmented (to simplify interpolation) with two extra values:
+# 1) the last value of the previous year is added at the start,
+# 2) the first value of the next year is added at the end.
 
 import json
 import sys
