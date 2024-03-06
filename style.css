@@ -48,15 +48,15 @@ path.sphere-outline {
 
 path.country {
     stroke-width: 0.5;
-    stroke: #5753a0;
-    fill: #7dc7dc;
+    stroke: darkslateblue;
+    fill: skyblue;
     fill-opacity: 0.5;
 }
 
 path.country-back {
     stroke-width: 0.5;
-    stroke: #7e7cac;
-    fill: #b6dde8;
+    stroke: mediumslateblue;
+    fill: lightblue;
     fill-opacity: 0.5;
 }
 
