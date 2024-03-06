@@ -98,7 +98,6 @@
 
     window.onload = async function() {
         console.time("onload");
-        eotsOfYear = await (await fetch("eot.json")).json();
         const countries = await d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
         addCountries(countries);
         updateHourMeridians(decimalSystem);
@@ -113,6 +112,8 @@
                 console.log(error);
             });
         }
+        d3.json("https://cdn.jsdelivr.net/gh/horizons-eot/data@latest/eot-2000-2100.json")
+            .then(obj => eotsOfYear = obj);
         console.timeEnd("onload");
     };
 
