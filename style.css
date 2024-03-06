@@ -61,25 +61,25 @@ path.country-back {
 
 path.hour-meridian {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 3;
     stroke: gray;
 }
 
 path.hour-meridian-back {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 3;
     stroke: lightgray;
 }
 
 path.mean-sun-meridian {
     fill: none;
-    stroke-width: 5;
+    stroke-width: 6;
     stroke: red;
 }
 
 path.mean-sun-meridian-back {
     fill: none;
-    stroke-width: 5;
+    stroke-width: 6;
     stroke: lightcoral;
 }
 
@@ -95,26 +95,26 @@ path.north-pole-circle-back {
 
 path.apparent-sun-meridian {
     fill: none;
-    stroke-width: 5;
+    stroke-width: 6;
     stroke: red;
     opacity: 0.05;
 }
 
 path.apparent-sun-meridian-back {
     fill: none;
-    stroke-width: 5;
+    stroke-width: 6;
     stroke: lightcoral;
     opacity: 0.05;
 }
 
 path.user-meridian {
     fill: none;
-    stroke-width: 5;
+    stroke-width: 3;
     stroke: darkorange;
 }
 
 path.user-meridian-back {
     fill: none;
-    stroke-width: 5;
+    stroke-width: 3;
     stroke: palegoldenrod;
 }
