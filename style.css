@@ -111,7 +111,7 @@ path.apparent-sun-meridian-back {
 path.user-meridian {
     fill: none;
     stroke-width: 5;
-    stroke: orange;
+    stroke: darkorange;
 }
 
 path.user-meridian-back {
