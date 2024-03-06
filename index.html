@@ -165,7 +165,7 @@
 
     function updateHourMeridians(system) {
         projection.rotate(rotation());
-        meridians = d3.geoGraticule().step([360/system.hoursInDay, 0]).extent([[-180, -90], [180, 90]]);
+        meridians = d3.geoGraticule().step([360/system.hoursInDay, 0]).extent([[-180, -90], [180, 89]]);
         svg = d3.select("svg");
 
         d3.selectAll(".hour-meridian").remove();
@@ -178,7 +178,7 @@
             .attr("class", "hour-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
-        svg.insert("path", "path.mean-sun-meridian")
+        svg.insert("path")
             .datum(meridians)
             .attr("class", "hour-meridian")
             .attr("d", path);
@@ -186,7 +186,7 @@
         svg.selectAll(".text")
             .data([...Array(system.hoursInDay).keys()])
             .enter()
-            .insert("text", "path.country")
+            .insert("text", "path.country-back")
             .text(function(i) { return i.toString(system.base); })
             .attr("class", "hour-meridian-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:600%")
@@ -214,11 +214,11 @@
                 .attr("class", "north-pole-circle-back")
                 .attr("d", path);
             projection.clipAngle(90);
-            svg.insert("path")
+            svg.insert("path", "path.hour-meridian")
                 .datum(meridian)
                 .attr("class", "mean-sun-meridian")
                 .attr("d", path);
-            svg.insert("path")
+            svg.insert("path", "path.hour-meridian")
                 .datum(northPoleCircle)
                 .attr("class", "north-pole-circle")
                 .attr("d", path);
@@ -246,7 +246,7 @@
                 .attr("class", "apparent-sun-meridian-back")
                 .attr("d", path);
             projection.clipAngle(90);
-            svg.insert("path")
+            svg.insert("path", "path.hour-meridian")
                 .datum(meridian)
                 .attr("class", "apparent-sun-meridian")
                 .attr("d", path);
