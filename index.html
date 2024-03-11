@@ -74,7 +74,8 @@
         .rotate(rotation())
         .precision(0.1);
     const path = d3.geoPath().projection(projection);
-    const meridian = d3.geoGraticule().step([360, 0]);
+    const northPoleCircleRadius = 1.5;
+    const meridian = d3.geoGraticule().step([360, 0]).extent([[-180, -90], [180, 90-northPoleCircleRadius]]);
 
     function rotation(roll=0, pitch=-90, yaw=0) { return [roll, pitch, yaw]; }
 
@@ -161,7 +162,7 @@
 
         const hourMeridians = d3.geoGraticule()
             .step([360/system.hoursInDay, 0])
-            .extent([[-180, -90], [180, 90]]);
+            .extent([[-180, -90], [180, 90-northPoleCircleRadius]]);
         projection.clipAngle(180);
         d3.selectAll(".hour-meridian-back").remove();
         svg.insert("path", "path.country")
@@ -170,7 +171,7 @@
             .attr("d", path);
         projection.clipAngle(90);
         d3.selectAll(".hour-meridian").remove();
-        svg.insert("path", "path.user-meridian")
+        svg.insert("path", "path.north-pole-circle")
             .datum(hourMeridians)
             .attr("class", "hour-meridian")
             .attr("d", path);
@@ -188,7 +189,7 @@
             .attr("d", path);
         projection.clipAngle(90);
         d3.selectAll(".minute-meridian-back").remove();
-        svg.insert("path", "path.user-meridian")
+        svg.insert("path", "path.north-pole-circle")
             .datum(baseMinutesMeridians)
             .attr("class", "minute-meridian")
             .attr("d", path);
@@ -214,7 +215,7 @@
         const svg = d3.select("svg");
         projection.rotate(rotation(meanSunLongitude));
         if (!meanSunMeridianInserted) {
-            const northPoleCircle = d3.geoCircle().center([0, 90]).radius(1.5);
+            const northPoleCircle = d3.geoCircle().center([0, 90]).radius(northPoleCircleRadius);
             projection.clipAngle(180);
             svg.insert("path", "path.country")
                 .datum(meridian)
@@ -287,7 +288,7 @@
             .attr("class", "user-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
-        svg.insert("path", "path.north-pole-circle")
+        svg.insert("path", "path.mean-sun-meridian")
             .datum(meridian)
             .attr("class", "user-meridian")
             .attr("d", path);
