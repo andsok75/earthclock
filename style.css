@@ -71,6 +71,18 @@ path.hour-meridian-back {
     stroke: lightgray;
 }
 
+path.minute-meridian {
+    fill: none;
+    stroke-width: 3;
+    stroke: gray;
+}
+
+path.minute-meridian-back {
+    fill: none;
+    stroke-width: 3;
+    stroke: lightgray;
+}
+
 path.mean-sun-meridian {
     fill: none;
     stroke-width: 14;

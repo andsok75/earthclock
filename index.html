@@ -157,24 +157,43 @@
 
     function updateHourMeridians(system) {
         projection.rotate(rotation());
-        const hourMeridians = d3.geoGraticule().step([360/system.hoursInDay, 0]).extent([[-180, -90], [180, 90]]);
         const svg = d3.select("svg");
 
-        d3.selectAll(".hour-meridian").remove();
-        d3.selectAll(".hour-meridian-back").remove();
-        d3.selectAll(".hour-meridian-label").remove();
-
+        const hourMeridians = d3.geoGraticule()
+            .step([360/system.hoursInDay, 0])
+            .extent([[-180, -90], [180, 90]]);
         projection.clipAngle(180);
+        d3.selectAll(".hour-meridian-back").remove();
         svg.insert("path", "path.country")
             .datum(hourMeridians)
             .attr("class", "hour-meridian-back")
             .attr("d", path);
         projection.clipAngle(90);
+        d3.selectAll(".hour-meridian").remove();
         svg.insert("path", "path.user-meridian")
             .datum(hourMeridians)
             .attr("class", "hour-meridian")
             .attr("d", path);
 
+        const baseMinutesMeridians = d3.geoGraticule()
+            .step([360/system.hoursInDay/(system.minutesInHour/system.base), 0])
+            .extent([[-180, -10], [180, 10]])
+            .stepMajor([360/system.hoursInDay/2, 0])
+            .extentMajor([[-180, -15], [180, 15]]);
+        projection.clipAngle(180);
+        d3.selectAll(".minute-meridian").remove();
+        svg.insert("path", "path.country")
+            .datum(baseMinutesMeridians)
+            .attr("class", "minute-meridian-back")
+            .attr("d", path);
+        projection.clipAngle(90);
+        d3.selectAll(".minute-meridian-back").remove();
+        svg.insert("path", "path.user-meridian")
+            .datum(baseMinutesMeridians)
+            .attr("class", "minute-meridian")
+            .attr("d", path);
+
+        d3.selectAll(".hour-meridian-label").remove();
         svg.selectAll(".text")
             .data([...Array(system.hoursInDay).keys()])
             .enter()
