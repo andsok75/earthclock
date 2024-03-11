@@ -177,9 +177,9 @@
 
         const baseMinutesMeridians = d3.geoGraticule()
             .step([360/system.hoursInDay/(system.minutesInHour/system.base), 0])
-            .extent([[-180, -10], [180, 10]])
+            .extent([[-180, -14], [180, 14]])
             .stepMajor([360/system.hoursInDay/2, 0])
-            .extentMajor([[-180, -15], [180, 15]]);
+            .extentMajor([[-180, -19], [180, 19]]);
         projection.clipAngle(180);
         d3.selectAll(".minute-meridian").remove();
         svg.insert("path", "path.country")
