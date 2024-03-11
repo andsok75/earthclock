@@ -30,24 +30,15 @@
             secondsInDay: 10*100*100
         },
         {
-            name: "base12",
+            name: "dozenal",
             base: 12,
             daysInWeek: 12,
             hoursInDay: 12,
             minutesInHour: 144,
             secondsInMinute: 144,
             secondsInHour: 144*144,
-            secondsInDay: 12*144*144
-        },
-        {
-            name: "base14",
-            base: 14,
-            daysInWeek: 14,
-            hoursInDay: 14,
-            minutesInHour: 196,
-            secondsInMinute: 196,
-            secondsInHour: 196*196,
-            secondsInDay: 14*196*196
+            secondsInDay: 12*144*144,
+            map: c => { return {'a': 't', 'b': 'e'}[c] || c; }
         },
         {
             name: "hex",
@@ -73,6 +64,7 @@
             secondsInDay: 24*60*60
         }
     ]
+    systems.forEach(system => { if (!system.map) system.map = c => c; });
     const decimalSystem = systems.find(system => system.name === "decimal");
     const nbsp = "\xa0";
     const svgViewBoxSize = 1000;
@@ -187,7 +179,7 @@
             .data([...Array(system.hoursInDay).keys()])
             .enter()
             .insert("text", "path.country-back")
-            .text(function(i) { return i.toString(system.base); })
+            .text(function(i) { return i.toString(system.base).replace(/./g, system.map); })
             .attr("class", "hour-meridian-label")
             .attr("style", "text-anchor:middle;font-family:monospace;font-size:600%")
             .attr("dy", "3%")
@@ -322,10 +314,10 @@
             document.getElementById('system-time').innerHTML = '<span id="hour"></span>:<span id="minute"></span>:<span id="second"></span> of week <span id="week"></span>';
         }
 
-        updateElementById('hour', time.hour.toString(base).padStart(2, nbsp));
-        updateElementById('minute', time.minute.toString(base).padStart(2, '0'));
-        updateElementById('second', time.second.toString(base).padStart(2, '0'));
-        updateElementById('week', week.toString(base).padEnd(2, nbsp));
+        updateElementById('hour', time.hour.toString(base).replace(/./g, system.map).padStart(2, nbsp));
+        updateElementById('minute', time.minute.toString(base).replace(/./g, system.map).padStart(2, '0'));
+        updateElementById('second', time.second.toString(base).replace(/./g, system.map).padStart(2, '0'));
+        updateElementById('week', week.toString(base).replace(/./g, system.map).padEnd(2, nbsp));
 
         const meanSunLongitude = 180*(1-decimalSecondOfDay/(decimalSystem.secondsInDay/2));
         if( previousMeanSunLongitude === undefined || Math.abs(meanSunLongitude-previousMeanSunLongitude) > 0.01) {
@@ -351,11 +343,11 @@
             document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span><span id="period"></span> at <span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>';
         }
 
-        updateElementById('user-hour', userTime.hour.toString(base));
-        updateElementById('user-minute', userTime.minute.toString(base).padStart(2, '0'));
+        updateElementById('user-hour', userTime.hour.toString(base).replace(/./g, system.map));
+        updateElementById('user-minute', userTime.minute.toString(base).replace(/./g, system.map).padStart(2, '0'));
         updateElementById('period', period);
-        updateElementById('hour-at-user-noon', timeAtUserNoon.hour.toString(base));
-        updateElementById('minute-at-user-noon', timeAtUserNoon.minute.toString(base).padStart(2, '0'));
+        updateElementById('hour-at-user-noon', timeAtUserNoon.hour.toString(base).replace(/./g, system.map));
+        updateElementById('minute-at-user-noon', timeAtUserNoon.minute.toString(base).replace(/./g, system.map).padStart(2, '0'));
     }
 
     function updateElementById(id, value) {
