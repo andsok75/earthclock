@@ -176,11 +176,14 @@
             .attr("class", "hour-meridian")
             .attr("d", path);
 
+        const step = 360/system.hoursInDay/(system.minutesInHour/system.base);
+        const stepMajor = 360/system.hoursInDay/2;
+        const size = (f) => Math.sqrt(f*step*360/Math.PI);
         const baseMinutesMeridians = d3.geoGraticule()
-            .step([360/system.hoursInDay/(system.minutesInHour/system.base), 0])
-            .extent([[-180, -14], [180, 14]])
-            .stepMajor([360/system.hoursInDay/2, 0])
-            .extentMajor([[-180, -19], [180, 19]]);
+            .step([step, 0])
+            .extent([[-180, -size(0.5)], [180, size(0.5)]])
+            .stepMajor([stepMajor, 0])
+            .extentMajor([[-180, -size(1)], [180, size(1)]]);
         projection.clipAngle(180);
         d3.selectAll(".minute-meridian").remove();
         svg.insert("path", "path.country")
@@ -189,7 +192,7 @@
             .attr("d", path);
         projection.clipAngle(90);
         d3.selectAll(".minute-meridian-back").remove();
-        svg.insert("path", "path.north-pole-circle")
+        svg.insert("path", "path.hour-meridian")
             .datum(baseMinutesMeridians)
             .attr("class", "minute-meridian")
             .attr("d", path);

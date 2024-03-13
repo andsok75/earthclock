@@ -75,6 +75,7 @@ path.minute-meridian {
     fill: none;
     stroke-width: 3;
     stroke: gray;
+    mix-blend-mode: difference;
 }
 
 path.minute-meridian-back {
@@ -88,14 +89,12 @@ path.mean-sun-meridian {
     stroke-width: 14;
     stroke: darkorange;
     stroke-linecap: round;
-    opacity: 0.8;
 }
 
 path.mean-sun-meridian-back {
     fill: none;
     stroke-width: 14;
     stroke: palegoldenrod;
-    opacity: 0.8;
 }
 
 path.north-pole-circle {
