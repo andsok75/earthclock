@@ -320,7 +320,7 @@
         }
 
         updateElementById('year', year.toString(decimalSystem.base).padStart(4, '0'));
-        updateElementById('day', dayOfYear.toString(decimalSystem.base).padStart(3, '0'));
+        updateElementById('day', dayOfYear.toString(decimalSystem.base));
         updateElementById('decimal-second', decimalSecondOfDay.toString(decimalSystem.base).padStart(5, '0'));
 
         const system = Object.assign({}, userSelectedSystem || decimalSystem);  // fix the system for consistency
