@@ -109,11 +109,9 @@
     };
 
     function createSystemSelection() {
-        const select = document.createElement("select");
-        select.id = "select-system";
+        const select = document.getElementById("select-system");
         select.setAttribute("autocomplete", "off");
         select.setAttribute("onchange", "updateSystem();");
-        document.body.appendChild(select);
         for (const system of systems) {
             const option = document.createElement("option");
             option.value = system.name;
@@ -123,6 +121,7 @@
             }
             select.add(option);
         }
+        select.setAttribute("style", "visibilty:visible");
     }
 
     function updateSystem() {
@@ -431,8 +430,9 @@
   </head>
   <body>
     <div id="time">&nbsp;</div>
+    <svg id="globe"></svg>
+    <select id="select-system" style="visibility:hidden"></select>
     <div id="system-time">&nbsp;</div>
     <div id="user-time">&nbsp;</div>
-    <svg id="globe"></svg>
 </body>
 </html>

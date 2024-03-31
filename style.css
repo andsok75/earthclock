@@ -5,11 +5,12 @@
     color: black;
     margin-left: 1px;
     margin-right: 1px;
+    margin-bottom: 15px;
 }
 
 #system-time {
     text-align: center;
-    font-size: 6vw;
+    font-size: 8vw;
     font-family: monospace;
     font-weight: 500;
     color: gray;
@@ -19,20 +20,19 @@
 
 #user-time {
     text-align: center;
-    font-size: 6vw;
+    font-size: 5vw;
     font-family: monospace;
     font-weight: 500;
     color: gray;
     margin-left: 1px;
     margin-right: 1px;
-    margin-bottom: 15px;
 }
 
 #period {
-    font-size: 4vw;
-    vertical-align: top;
+    font-size: 3vw;
+    vertical-align: text-top;
     color: darkgray;
-    margin-left: 0.5vw;
+    margin-left: 0vw;
 }
 
 #globe {
