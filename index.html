@@ -363,14 +363,16 @@
         const userTimeElement = document.getElementById('user-time');
         if (userTimeElement.textContent === undefined) { return; }
         if (userTimeElement.textContent === nbsp) {
-            document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span><span id="period"></span> at <span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>';
+            document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span>:<span id="user-second"></span><span id="period"></span> at <span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>:<span id="second-at-user-noon"></span>';
         }
 
-        updateElementById('user-hour', userTime.hour.toString(base).replace(/./g, system.map));
+        updateElementById('user-hour', userTime.hour.toString(base).replace(/./g, system.map).padStart(2, nbsp));
         updateElementById('user-minute', userTime.minute.toString(base).replace(/./g, system.map).padStart(2, '0'));
+        updateElementById('user-second', userTime.second.toString(base).replace(/./g, system.map).padStart(2, '0'));
         updateElementById('period', period);
         updateElementById('hour-at-user-noon', timeAtUserNoon.hour.toString(base).replace(/./g, system.map));
         updateElementById('minute-at-user-noon', timeAtUserNoon.minute.toString(base).replace(/./g, system.map).padStart(2, '0'));
+        updateElementById('second-at-user-noon', timeAtUserNoon.second.toString(base).replace(/./g, system.map).padStart(2, '0'));
     }
 
     function updateElementById(id, value) {
