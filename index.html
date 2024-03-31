@@ -183,7 +183,7 @@
             .step([step, 0])
             .extent([[-180, -size(0.5)], [180, size(0.5)]])
             .stepMajor([stepMajor, 0])
-            .extentMajor([[-180, -size(1)], [180, size(1)]]);
+            .extentMajor([[-180, -size(1.2)], [180, size(1.2)]]);
         projection.clipAngle(180);
         d3.selectAll(".minute-meridian").remove();
         svg.insert("path", "path.country")
