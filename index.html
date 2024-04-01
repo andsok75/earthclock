@@ -66,7 +66,14 @@
     ]
     systems.forEach(system => { if (!system.map) system.map = c => c; });
     const decimalSystem = systems.find(system => system.name === "decimal");
+
     const nbsp = "\xa0";
+
+    const northPoleView = {roll: 0, pitch: 90, yaw: 0};
+    const southPoleView = {roll: -180, pitch: -90, yaw: 0};
+    const view = northPoleView;
+    function rotation(roll=0, pitch=0, yaw=0) { return [roll-view.roll, pitch-view.pitch, yaw-view.yaw]; }
+
     const svgViewBoxSize = 1000;
     const projection = d3.geoOrthographic()
         .scale(svgViewBoxSize/2)
@@ -76,8 +83,6 @@
     const path = d3.geoPath().projection(projection);
     const poleCircleRadius = 1.5;
     const meridian = d3.geoGraticule().step([360, 0]).extent([[-180, -(90-poleCircleRadius)], [180, 90-poleCircleRadius]]);
-
-    function rotation(roll=0, pitch=0, yaw=0) { return [roll, pitch-90, yaw]; }
 
     let userSelectedSystem = undefined;
     let userLongitude = undefined;
