@@ -77,7 +77,7 @@
     const northPoleCircleRadius = 1.5;
     const meridian = d3.geoGraticule().step([360, 0]).extent([[-180, -90], [180, 90-northPoleCircleRadius]]);
 
-    function rotation(roll=0, pitch=-90, yaw=0) { return [roll, pitch, yaw]; }
+    function rotation(roll=0, pitch=0, yaw=0) { return [roll, pitch-90, yaw]; }
 
     let userSelectedSystem = undefined;
     let userLongitude = undefined;
