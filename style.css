@@ -117,6 +117,16 @@ path.north-pole-circle-back {
     stroke: palegoldenrod;
 }
 
+path.south-pole-circle {
+    fill: darkorange;
+    stroke: darkorange;
+}
+
+path.south-pole-circle-back {
+    fill: palegoldenrod;
+    stroke: palegoldenrod;
+}
+
 path.apparent-sun-meridian {
     fill: none;
     stroke-width: 14;

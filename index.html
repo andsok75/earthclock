@@ -74,8 +74,8 @@
         .rotate(rotation())
         .precision(0.1);
     const path = d3.geoPath().projection(projection);
-    const northPoleCircleRadius = 1.5;
-    const meridian = d3.geoGraticule().step([360, 0]).extent([[-180, -90], [180, 90-northPoleCircleRadius]]);
+    const poleCircleRadius = 1.5;
+    const meridian = d3.geoGraticule().step([360, 0]).extent([[-180, -(90-poleCircleRadius)], [180, 90-poleCircleRadius]]);
 
     function rotation(roll=0, pitch=0, yaw=0) { return [roll, pitch-90, yaw]; }
 
@@ -161,7 +161,7 @@
 
         const hourMeridians = d3.geoGraticule()
             .step([360/system.hoursInDay, 0])
-            .extent([[-180, -90], [180, 90-northPoleCircleRadius]]);
+            .extent([[-180, -(90-poleCircleRadius)], [180, 90-poleCircleRadius]]);
         projection.clipAngle(180);
         d3.selectAll(".hour-meridian-back").remove();
         svg.insert("path", "path.country")
@@ -217,7 +217,8 @@
         const svg = d3.select("svg");
         projection.rotate(rotation(meanSunLongitude));
         if (!meanSunMeridianInserted) {
-            const northPoleCircle = d3.geoCircle().center([0, 90]).radius(northPoleCircleRadius);
+            const northPoleCircle = d3.geoCircle().center([0, 90]).radius(poleCircleRadius);
+            const southPoleCircle = d3.geoCircle().center([0, -90]).radius(poleCircleRadius);
             projection.clipAngle(180);
             svg.insert("path", "path.country")
                 .datum(meridian)
@@ -227,6 +228,10 @@
                 .datum(northPoleCircle)
                 .attr("class", "north-pole-circle-back")
                 .attr("d", path);
+            svg.insert("path", "path.country")
+                .datum(southPoleCircle)
+                .attr("class", "south-pole-circle-back")
+                .attr("d", path);
             projection.clipAngle(90);
             svg.insert("path")
                 .datum(meridian)
@@ -235,6 +240,10 @@
             svg.insert("path", "path.mean-sun-meridian")
                 .datum(northPoleCircle)
                 .attr("class", "north-pole-circle")
+                .attr("d", path);
+            svg.insert("path", "path.mean-sun-meridian")
+                .datum(southPoleCircle)
+                .attr("class", "south-pole-circle")
                 .attr("d", path);
             meanSunMeridianInserted = true;
         } else {
