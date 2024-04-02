@@ -26,7 +26,7 @@
 
 #user-time {
     text-align: center;
-    font-size: 5vw;
+    font-size: 7vw;
     font-family: monospace;
     font-weight: 500;
     color: black;
@@ -36,9 +36,9 @@
 }
 
 #user-period {
-    font-size: 3vw;
+    font-size: 4vw;
     vertical-align: text-top;
-    color: gray;
+    color: dimgray;
 }
 
 #user-at {
