@@ -70,9 +70,11 @@
 
     const nbsp = "\xa0";
 
+    const params = new URLSearchParams(location.search);
+
     const northPoleView = {roll: 0, pitch: 90, yaw: 0};
     const southPoleView = {roll: -180, pitch: -90, yaw: 0};
-    const view = northPoleView;
+    const view = params.get("view") === "south" ? southPoleView : northPoleView;
     function rotation(roll=0, pitch=0, yaw=0) { return [roll-view.roll, pitch-view.pitch, yaw-view.yaw]; }
 
     const svgViewBoxSize = 1000;
@@ -84,8 +86,6 @@
     const path = d3.geoPath().projection(projection);
     const poleCircleRadius = 1.5;
     const meridian = d3.geoGraticule().step([360, 0]).extent([[-180, -(90-poleCircleRadius)], [180, 90-poleCircleRadius]]);
-
-    const params = new URLSearchParams(location.search);
 
     let userSelectedSystem = findSystemByName(params.get("system")) ?? decimalSystem;
     let userLongitude = undefined;
