@@ -347,7 +347,7 @@
         const systemTimeElement = document.getElementById('system-time');
         if (systemTimeElement.textContent === undefined) { return; }
         if (systemTimeElement.textContent === nbsp) {
-            document.getElementById('system-time').innerHTML = '<span id="hour"></span>:<span id="minute"></span>:<span id="second"></span><span id="system-time-of-week"> of week </span><span id="week"></span>';
+            document.getElementById('system-time').innerHTML = '<span id="hour"></span>:<span id="minute"></span>:<span id="second"></span><span id="system-time-of-week">&nbsp;of&nbsp;week&nbsp;</span><span id="week"></span>';
         }
 
         updateElementById('hour', time.hour.toString(base).replace(/./g, system.map).padStart(3, nbsp));
@@ -376,7 +376,7 @@
         const userTimeElement = document.getElementById('user-time');
         if (userTimeElement.textContent === undefined) { return; }
         if (userTimeElement.textContent === nbsp) {
-            document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span>:<span id="user-second"></span><span id="user-period"></span><span id="user-at"> at </span><span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>:<span id="second-at-user-noon"></span>';
+            document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span>:<span id="user-second"></span><span id="user-period"></span><span id="user-at">&nbsp;at&nbsp;</span><span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>:<span id="second-at-user-noon"></span>';
         }
 
         updateElementById('user-hour', userTime.hour.toString(base).replace(/./g, system.map).padStart(2, nbsp));
