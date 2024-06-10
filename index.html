@@ -350,7 +350,7 @@
             document.getElementById('system-time').innerHTML = '<span id="hour"></span>:<span id="minute"></span>:<span id="second"></span><span id="system-time-of-week">&nbsp;of&nbsp;week&nbsp;</span><span id="week"></span>';
         }
 
-        updateElementById('hour', time.hour.toString(base).replace(/./g, system.map).padStart(3, nbsp));
+        updateElementById('hour', time.hour.toString(base).replace(/./g, system.map).padStart(2, nbsp));
         updateElementById('minute', time.minute.toString(base).replace(/./g, system.map).padStart(2, '0'));
         updateElementById('second', time.second.toString(base).replace(/./g, system.map).padStart(2, '0'));
         updateElementById('week', week.toString(base).replace(/./g, system.map).padEnd(2, nbsp));
