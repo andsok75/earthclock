@@ -72,6 +72,8 @@
 
     const params = new URLSearchParams(location.search);
 
+    const showSeconds = params.get("seconds") !== "off";
+
     const northPoleView = {roll: 0, pitch: 90, yaw: 0};
     const southPoleView = {roll: -180, pitch: -90, yaw: 0};
     const view = params.get("view") === "south" ? southPoleView : northPoleView;
@@ -332,12 +334,12 @@
         const timeElement = document.getElementById('time');
         if (timeElement.textContent === undefined) { return; }
         if (timeElement.textContent === nbsp) {
-            document.getElementById('time').innerHTML = '<span id="year"></span>/<span id="day"></span>.<span id="decimal-second"></span>';
+            document.getElementById('time').innerHTML = '<span id="year"></span>/<span id="day"></span>.<span id="decimals"></span>';
         }
 
-        updateElementById('year', year.toString(decimalSystem.base).padStart(4, '0'));
-        updateElementById('day', dayOfYear.toString(decimalSystem.base));
-        updateElementById('decimal-second', decimalSecondOfDay.toString(decimalSystem.base).padStart(5, '0'));
+        updateElementById('year', year.toString().padStart(4, '0'));
+        updateElementById('day', dayOfYear.toString());
+        updateElementById('decimals', decimalSecondOfDay.toString().padStart(5, '0').slice(0, showSeconds ? 5 : 3));
 
         const system = Object.assign({}, userSelectedSystem);  // fix the system for consistency
         const base = system.base;
@@ -350,7 +352,7 @@
         const systemTimeElement = document.getElementById('system-time');
         if (systemTimeElement.textContent === undefined) { return; }
         if (systemTimeElement.textContent === nbsp) {
-            document.getElementById('system-time').innerHTML = '<span id="hour"></span>:<span id="minute"></span>:<span id="second"></span><span id="system-time-of-week">&nbsp;of&nbsp;week&nbsp;</span><span id="week"></span>';
+            document.getElementById('system-time').innerHTML = '<span id="hour"></span>:<span id="minute"></span>' + (showSeconds ? ':<span id="second"></span>' : '') + '<span id="system-time-of-week">&nbsp;of&nbsp;week&nbsp;</span><span id="week"></span>';
         }
 
         updateElementById('hour', time.hour.toString(base).replace(/./g, system.map).padStart(2, nbsp));
@@ -379,7 +381,7 @@
         const userTimeElement = document.getElementById('user-time');
         if (userTimeElement.textContent === undefined) { return; }
         if (userTimeElement.textContent === nbsp) {
-            document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span>:<span id="user-second"></span><span id="user-period"></span><span id="user-at">&nbsp;at&nbsp;</span><span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>:<span id="second-at-user-noon"></span>';
+            document.getElementById('user-time').innerHTML = '<span id="user-hour"></span>:<span id="user-minute"></span>' + (showSeconds ? ':<span id="user-second"></span>' : '') + '<span id="user-period"></span><span id="user-at">&nbsp;at&nbsp;</span><span id="hour-at-user-noon"></span>:<span id="minute-at-user-noon"></span>' + (showSeconds ? ':<span id="second-at-user-noon"></span>' : '');
         }
 
         updateElementById('user-hour', userTime.hour.toString(base).replace(/./g, system.map).padStart(2, nbsp));
@@ -392,8 +394,10 @@
     }
 
     function updateElementById(id, value) {
-        if (document.getElementById(id).textContent !== value) {
-            document.getElementById(id).textContent = value;
+        const elem = document.getElementById(id);
+        if (elem == null) { return; }
+        if (elem.textContent !== value) {
+            elem.textContent = value;
         }
     }
 
