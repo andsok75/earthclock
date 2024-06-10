@@ -65,7 +65,8 @@
         }
     ]
     systems.forEach(system => { if (!system.map) system.map = c => c; });
-    const decimalSystem = systems.find(system => system.name === "decimal");
+    function findSystemByName(name) { return systems.find(system => system.name === name); }
+    const decimalSystem = findSystemByName("decimal");
 
     const nbsp = "\xa0";
 
@@ -84,7 +85,9 @@
     const poleCircleRadius = 1.5;
     const meridian = d3.geoGraticule().step([360, 0]).extent([[-180, -(90-poleCircleRadius)], [180, 90-poleCircleRadius]]);
 
-    let userSelectedSystem = undefined;
+    const params = new URLSearchParams(location.search);
+
+    let userSelectedSystem = findSystemByName(params.get("system")) ?? decimalSystem;
     let userLongitude = undefined;
     let eotsOfYear = undefined;
     let previousMeanSunLongitude = undefined;
@@ -96,7 +99,7 @@
         console.time("onload");
         const countries = await d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json");
         addCountries(countries);
-        updateHourMeridians(decimalSystem);
+        updateHourMeridians();
         setInterval(updateTime, 1000/60);
         createSystemSelection();
         if (navigator.geolocation) {
@@ -121,7 +124,7 @@
             const option = document.createElement("option");
             option.value = system.name;
             option.text = system.name;
-            if (system.name === decimalSystem.name) {
+            if (system.name === userSelectedSystem.name) {
                 option.setAttribute("selected", "selected");
             }
             select.add(option);
@@ -130,9 +133,8 @@
     }
 
     function updateSystem() {
-        const userSelectedSystemName = document.getElementById("select-system").value;
-        userSelectedSystem = systems.find(system => system.name === userSelectedSystemName);
-        updateHourMeridians(userSelectedSystem);
+        userSelectedSystem = findSystemByName(document.getElementById("select-system").value);
+        updateHourMeridians();
     }
 
     function addCountries(countries) {
@@ -160,7 +162,8 @@
             .attr("d", path);
     }
 
-    function updateHourMeridians(system) {
+    function updateHourMeridians() {
+        const system = Object.assign({}, userSelectedSystem);  // fix the system for consistency
         projection.rotate(rotation());
         const svg = d3.select("svg");
 
@@ -336,7 +339,7 @@
         updateElementById('day', dayOfYear.toString(decimalSystem.base));
         updateElementById('decimal-second', decimalSecondOfDay.toString(decimalSystem.base).padStart(5, '0'));
 
-        const system = Object.assign({}, userSelectedSystem || decimalSystem);  // fix the system for consistency
+        const system = Object.assign({}, userSelectedSystem);  // fix the system for consistency
         const base = system.base;
         const secondOfDay = getSecondOfDay(system, date);
         const offset = system.name !== "traditional" ? 0 : new Date(Date.UTC(year, 0)).getUTCDay()-1;
